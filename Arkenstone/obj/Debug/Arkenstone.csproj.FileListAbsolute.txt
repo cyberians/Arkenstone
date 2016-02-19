@@ -1,1 +1,12 @@
 E:\Яндекс Диск\Учеба\Диплом\Arkenstone\Arkenstone\bin\Debug\Arkenstone.exe.config
+E:\Яндекс Диск\Учеба\Диплом\Arkenstone\Arkenstone\bin\Debug\Arkenstone.exe
+E:\Яндекс Диск\Учеба\Диплом\Arkenstone\Arkenstone\bin\Debug\Arkenstone.pdb
+E:\Яндекс Диск\Учеба\Диплом\Arkenstone\Arkenstone\obj\Debug\Arkenstone.csprojResolveAssemblyReference.cache
+E:\Яндекс Диск\Учеба\Диплом\Arkenstone\Arkenstone\obj\Debug\Arkenstone.Form1.resources
+E:\Яндекс Диск\Учеба\Диплом\Arkenstone\Arkenstone\obj\Debug\Arkenstone.Properties.Resources.resources
+E:\Яндекс Диск\Учеба\Диплом\Arkenstone\Arkenstone\obj\Debug\Arkenstone.csproj.GenerateResource.Cache
+E:\Яндекс Диск\Учеба\Диплом\Arkenstone\Arkenstone\obj\Debug\Arkenstone.exe
+E:\Яндекс Диск\Учеба\Диплом\Arkenstone\Arkenstone\obj\Debug\Arkenstone.pdb
+E:\Яндекс Диск\Учеба\Диплом\Arkenstone\Arkenstone\bin\Debug\Dataweb.NShape.pdb
+E:\Яндекс Диск\Учеба\Диплом\Arkenstone\Arkenstone\bin\Debug\Dataweb.NShape.xml
+E:\Яндекс Диск\Учеба\Диплом\Arkenstone\Arkenstone\bin\Debug\Dataweb.NShape.WinFormsUI.xml
