@@ -183,5 +183,21 @@ namespace Arkenstone
             count++;
             countInp++;
         }
+
+        private void cachedRepository1_ConnectionInserted(object sender, RepositoryShapeConnectionEventArgs e)
+        {
+            if (e.ConnectorShape.GetConnectionInfos(ControlPointId.Any, null).Count<ShapeConnectionInfo>() == 2)
+            {
+                first_vertex = e.ConnectorShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape;
+                last_vertex = e.ConnectorShape.GetConnectionInfo(ControlPointId.LastVertex, null).OtherShape;
+                if (first_vertex.Type.Name == "Picture")
+                {
+                    Operations.Connect_shapes_picture(display1, first_vertex, last_vertex, project1, diagram, cachedRepository1, e);
+                }
+                if (first_vertex.Type.Name == "Box")
+                {
+                }
+            }
+        }
     }
 }

@@ -30,20 +30,20 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            Dataweb.NShape.RoleBasedSecurityManager roleBasedSecurityManager6 = new Dataweb.NShape.RoleBasedSecurityManager();
+            Dataweb.NShape.RoleBasedSecurityManager roleBasedSecurityManager1 = new Dataweb.NShape.RoleBasedSecurityManager();
             this.listView1 = new System.Windows.Forms.ListView();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.файлToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.cachedRepository1 = new Dataweb.NShape.Advanced.CachedRepository();
+            this.xmlStore1 = new Dataweb.NShape.XmlStore();
             this.diagramSetController1 = new Dataweb.NShape.Controllers.DiagramSetController();
-            this.display1 = new Dataweb.NShape.WinFormsUI.Display();
             this.project1 = new Dataweb.NShape.Project(this.components);
+            this.display1 = new Dataweb.NShape.WinFormsUI.Display();
             this.propertyController1 = new Dataweb.NShape.Controllers.PropertyController();
             this.propertyPresenter1 = new Dataweb.NShape.WinFormsUI.PropertyPresenter();
             this.toolSetController1 = new Dataweb.NShape.Controllers.ToolSetController();
             this.toolSetListViewPresenter1 = new Dataweb.NShape.WinFormsUI.ToolSetListViewPresenter(this.components);
-            this.xmlStore1 = new Dataweb.NShape.XmlStore();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.button1 = new System.Windows.Forms.Button();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
@@ -55,8 +55,13 @@
             // 
             // listView1
             // 
+            this.listView1.FullRowSelect = true;
+            this.listView1.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.listView1.HideSelection = false;
             this.listView1.Location = new System.Drawing.Point(12, 58);
+            this.listView1.MultiSelect = false;
             this.listView1.Name = "listView1";
+            this.listView1.ShowItemToolTips = true;
             this.listView1.Size = new System.Drawing.Size(157, 350);
             this.listView1.TabIndex = 0;
             this.listView1.UseCompatibleStateImageBehavior = false;
@@ -90,11 +95,31 @@
             this.cachedRepository1.ProjectName = null;
             this.cachedRepository1.Store = this.xmlStore1;
             this.cachedRepository1.Version = 0;
+            this.cachedRepository1.ConnectionInserted += new System.EventHandler<Dataweb.NShape.RepositoryShapeConnectionEventArgs>(this.cachedRepository1_ConnectionInserted);
+            // 
+            // xmlStore1
+            // 
+            this.xmlStore1.DesignFileName = "";
+            this.xmlStore1.DirectoryName = "";
+            this.xmlStore1.FileExtension = ".xml";
+            this.xmlStore1.ImageLocation = Dataweb.NShape.XmlStore.ImageFileLocation.Directory;
+            this.xmlStore1.ProjectFilePath = ".xml";
+            this.xmlStore1.ProjectName = "";
             // 
             // diagramSetController1
             // 
             this.diagramSetController1.ActiveTool = null;
             this.diagramSetController1.Project = this.project1;
+            // 
+            // project1
+            // 
+            this.project1.Description = null;
+            this.project1.LibrarySearchPaths = ((System.Collections.Generic.IList<string>)(resources.GetObject("project1.LibrarySearchPaths")));
+            this.project1.Name = null;
+            this.project1.Repository = this.cachedRepository1;
+            roleBasedSecurityManager1.CurrentRole = Dataweb.NShape.StandardRole.Administrator;
+            roleBasedSecurityManager1.CurrentRoleName = "Administrator";
+            this.project1.SecurityManager = roleBasedSecurityManager1;
             // 
             // display1
             // 
@@ -119,16 +144,6 @@
             this.display1.ToolPreviewBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(119)))), ((int)(((byte)(136)))), ((int)(((byte)(153)))));
             this.display1.ToolPreviewColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(70)))), ((int)(((byte)(130)))), ((int)(((byte)(180)))));
             // 
-            // project1
-            // 
-            this.project1.Description = null;
-            this.project1.LibrarySearchPaths = ((System.Collections.Generic.IList<string>)(resources.GetObject("project1.LibrarySearchPaths")));
-            this.project1.Name = null;
-            this.project1.Repository = this.cachedRepository1;
-            roleBasedSecurityManager6.CurrentRole = Dataweb.NShape.StandardRole.Administrator;
-            roleBasedSecurityManager6.CurrentRoleName = "Administrator";
-            this.project1.SecurityManager = roleBasedSecurityManager6;
-            // 
             // propertyController1
             // 
             this.propertyController1.Project = this.project1;
@@ -150,15 +165,6 @@
             this.toolSetListViewPresenter1.ListView = this.listView1;
             this.toolSetListViewPresenter1.ShowDefaultContextMenu = true;
             this.toolSetListViewPresenter1.ToolSetController = this.toolSetController1;
-            // 
-            // xmlStore1
-            // 
-            this.xmlStore1.DesignFileName = "";
-            this.xmlStore1.DirectoryName = "";
-            this.xmlStore1.FileExtension = ".xml";
-            this.xmlStore1.ImageLocation = Dataweb.NShape.XmlStore.ImageFileLocation.Directory;
-            this.xmlStore1.ProjectFilePath = ".xml";
-            this.xmlStore1.ProjectName = "";
             // 
             // pictureBox1
             // 
