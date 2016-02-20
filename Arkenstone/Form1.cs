@@ -59,7 +59,7 @@ namespace Arkenstone
         List<int[]> connectInp = new List<int[]>();
 
         List<Link> layer1_connect = new List<Link>();
-        List<Link> layer2_coonect = new List<Link>();
+        List<Link> layer2_connect = new List<Link>();
         List<Link> layer3_connect = new List<Link>();
 
          int countInp = 0;
@@ -80,7 +80,6 @@ namespace Arkenstone
 
          public void run_network()
          {
-             Random r = new Random();
              for (int q = 0; q < output_layer.Count<Neuron>(); q++)
              {
                  if (limit_out - output_layer[q].a > 0.01)
@@ -430,8 +429,7 @@ namespace Arkenstone
 
             add_tools();
 
-            diagram = new Diagram("d1");
-            diagram.Size = new Size(570, 420);
+            diagram = new Diagram("d1") {Size = new Size(570, 420)};
 
             cachedRepository1.InsertAll(diagram);
 
@@ -456,7 +454,7 @@ namespace Arkenstone
                 pictureBox2.Image = null;
                 bm_test = bm1.Clone(new Rectangle(0, 0, 64, 64), bm1.PixelFormat);
                 bm3 = new Bitmap(64, 64);
-                Point p = pictureBox1.PointToClient(System.Windows.Forms.Cursor.Position);
+                Point p = pictureBox1.PointToClient(Cursor.Position);
                 bm2 = bm1.Clone(new RectangleF((float)(p.X - 10), (float)(p.Y - 8), 20f, 16f), bm1.PixelFormat);
                 Graphics g = Graphics.FromImage(bm3);
                 g.Clear(Color.White);
@@ -470,7 +468,10 @@ namespace Arkenstone
                 bm_test = null;
             }
 
-            catch { }
+            catch
+            {
+                // ignored
+            }
         }
 
         private void pictureBox1_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -489,7 +490,8 @@ namespace Arkenstone
             box.Data = count.ToString();
             box.Text = box.Data;
             diagram.Shapes.Add(box);
-            cachedRepository1.Insert(box as Shape, diagram);
+            cachedRepository1.Insert((Shape) box, diagram);
+
             count++;
             countInp++;
         }
@@ -518,8 +520,9 @@ namespace Arkenstone
                 foreach (Shape s in display1.SelectedShapes)
                 {
                     List<int> numList = new List<int>();
-                    List<ShapeConnectionInfo> shi = new List<ShapeConnectionInfo>();
-                    shi = s.GetConnectionInfos(ControlPointId.Any, null).ToList<ShapeConnectionInfo>();
+
+                    var shi = s.GetConnectionInfos(ControlPointId.Any, null).ToList<ShapeConnectionInfo>();
+
                     for (int i = 0; i < shi.Count; i++)
                     {
                         if (shi[i].OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data != s.Data)
@@ -528,6 +531,7 @@ namespace Arkenstone
                             numList.Add(Convert.ToInt32(data));
                         }
                     }
+
                     int[] num = numList.ToArray();
                     visGrPriznak.Add(Operations.shapeDraw(display1, num));
                     Operations.GetBinaryPic(Operations.shapeDraw(display1, num), input);
@@ -558,14 +562,13 @@ namespace Arkenstone
                 foreach (Shape s in display1.SelectedShapes)
                 {
                     List<int> numList = new List<int>();
-                    List<ShapeConnectionInfo> shi = new List<ShapeConnectionInfo>();
-                    shi = s.GetConnectionInfos(ControlPointId.Any, null).ToList<ShapeConnectionInfo>();
+                    var shi = s.GetConnectionInfos(ControlPointId.Any, null).ToList<ShapeConnectionInfo>();
                     for (int i = 0; i < shi.Count; i++)
                     {
                         if (shi[i].OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data != s.Data)
                         {
                             string data = shi[i].OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data;
-                            numList.Add(System.Convert.ToInt32(data));
+                            numList.Add(Convert.ToInt32(data));
                         }
                     }
                     int[] num = numList.ToArray();

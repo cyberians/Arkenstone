@@ -6,9 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace Arkenstone.Classes
 {
@@ -60,8 +57,7 @@ namespace Arkenstone.Classes
                 {
                     foreach (Shape s in display.SelectedShapes)
                     {
-                        List<ShapeConnectionInfo> shi = new List<ShapeConnectionInfo>();
-                        shi = s.GetConnectionInfos(ControlPointId.Any, null).ToList();
+                        var shi = s.GetConnectionInfos(ControlPointId.Any, null).ToList();
                         for (int j = 0; j < shi.Count; j++)
                         {
                             for (int i = 0; i < numb.Length; i++)
@@ -84,7 +80,6 @@ namespace Arkenstone.Classes
                                 }
                             }
                         }
-
                     }
                 }
             }
@@ -96,9 +91,7 @@ namespace Arkenstone.Classes
         {
             Bitmap bm = new Bitmap(64, 64);
 
-            List<ShapeConnectionInfo> shi = new List<ShapeConnectionInfo>();
-
-            shi = shape.GetConnectionInfos(ControlPointId.Any, null).ToList();
+            var shi = shape.GetConnectionInfos(ControlPointId.Any, null).ToList();
 
             using (var g = Graphics.FromImage(bm))
                 g.Clear(Color.White);
