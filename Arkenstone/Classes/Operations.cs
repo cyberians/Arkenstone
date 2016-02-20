@@ -148,14 +148,13 @@ namespace Arkenstone.Classes
 
         public static void Connect_shapes_picture(Display display1, Shape first_vertex, Shape last_vertex, Project project1, Diagram diagram, CachedRepository cachedRepository1, RepositoryShapeConnectionEventArgs e)
         {
-            Picture new_p = (Picture)project1.ShapeTypes["Picture"].CreateInstance();
+            var new_p = (Picture)project1.ShapeTypes["Picture"].CreateInstance();
 
-            Box b = last_vertex as Box;
+            var b = last_vertex as Box;
 
             if (b != null)
             {
-                NamedImage img = new NamedImage();
-                img.Image = newDraw(last_vertex);
+                var img = new NamedImage {Image = newDraw(last_vertex)};
                 new_p.Image = img;
                 new_p.FillStyle = project1.Design.FillStyles.Transparent;
 
@@ -169,7 +168,7 @@ namespace Arkenstone.Classes
                 new_p.Y = b.Y;
 
                 diagram.Shapes.Add(new_p);
-                cachedRepository1.Insert(new_p as Shape, diagram);
+                cachedRepository1.Insert((Shape) new_p, diagram);
 
                 diagram.Shapes.Remove(b);
 
@@ -182,10 +181,9 @@ namespace Arkenstone.Classes
 
             if (b == null && last_vertex.Type.Name == "Picture")
             {
-                NamedImage img = new NamedImage();
-                img.Image = newDraw(last_vertex);
+                var img = new NamedImage {Image = newDraw(last_vertex)};
 
-                Picture picture = last_vertex as Picture;
+                var picture = last_vertex as Picture;
 
                 picture.Image = img;
                 picture.FillStyle = project1.Design.FillStyles.Transparent;
