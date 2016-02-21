@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace Arkenstone.Classes
 {
-    class Network
+    public class Network
     {
+        public List<NetLayer> Layers = new List<NetLayer>();
+
+
     }
 }

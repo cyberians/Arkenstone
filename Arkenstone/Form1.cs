@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -46,9 +47,9 @@ namespace Arkenstone
 
         List<double[,]> input_signal = new List<double[,]>();
 
-         double[,] input = new double[64, 64];
+        double[,] input = new double[64, 64];
 
-         double[,] enter = new double[64, 64];
+        double[,] enter = new double[64, 64];
 
         List<Bitmap> visPriznak = new List<Bitmap>();
         List<Bitmap> visGrPriznak = new List<Bitmap>();
@@ -57,359 +58,368 @@ namespace Arkenstone
         List<int[]> connect = new List<int[]>();
         List<int[]> connectOut = new List<int[]>();
         List<int[]> connectInp = new List<int[]>();
+        List<int> inputList = new List<int>();
 
         List<Link> layer1_connect = new List<Link>();
         List<Link> layer2_connect = new List<Link>();
         List<Link> layer3_connect = new List<Link>();
 
-         int countInp = 0;
-         int countgr2 = 0;
-         int count = 1;
-         int outGr = 0;
+        int countgr2 = 0;
+        int count = 1;
+        int outGr = 0;
 
-         double limit_out = 1.0;
-         double speed = 3.0;
-         double[,] submit;
-         double sigma;
+        double limit_out = 1.0;
+        double speed = 3.0;
+        double[,] submit;
+        double sigma;
 
-         Shape first_vertex;
-         Shape last_vertex;
+        Shape first_vertex;
+        Shape last_vertex;
+
+        Network network = new Network();
 
         /////////////--------НЕЙРОСЕТЕВЫЕ АЛГОРИТМЫ
 
 
-         public void run_network()
-         {
-             for (int q = 0; q < output_layer.Count<Neuron>(); q++)
-             {
-                 if (limit_out - output_layer[q].a > 0.01)
-                 {
-                     for (int q2 = 0; q2 < hid2_layer.Count<Neuron>(); q2++)
-                     {
-                         if (connectOut[q].Contains(Convert.ToInt32(q2 + 1)))
-                         {
-                             for (int i = 0; i < hid1_layer.Count<Neuron>(); i++)
-                             {
-                                 if (connect[q2].Contains(Convert.ToInt32(i + 1)))
-                                 {
-                                     double sum = 0.0;
-                                     for (int x = 0; x < 64; x++)
-                                     {
-                                         for (int y = 0; y < 64; y++)
-                                         {
-                                             sum += hid1_layer[i].weight[x, y];
-                                         }
-                                     }
-                                     hid1_layer[i].a = Neuron.sigmoida(sum - hid1_layer[i].threshold);
-                                 }
-                             }
-                         }
-                     }
-                 }
-             }
-             for (int q = 0; q < output_layer.Count<Neuron>(); q++)
-             {
-                 if (limit_out - output_layer[q].a > 0.01)
-                 {
-                     for (int i = 0; i < hid2_layer.Count<Neuron>(); i++)
-                     {
-                         if (connectOut[q].Contains(Convert.ToInt32(i + 1)))
-                         {
-                             hid2_layer[i].weight = new double[64, 64];
-                             double sum = 0.0;
-                             for (int j = 0; j < hid1_layer.Count<Neuron>(); j++)
-                             {
-                                 if (connect[i].Contains(Convert.ToInt32(j + 1)))
-                                 {
-                                     for (int x = 0; x < 64; x++)
-                                     {
-                                         for (int y = 0; y < 64; y++)
-                                         {
-                                             sum += hid1_layer[j].weight[x, y] * hid1_layer[j].a;
-                                             hid2_layer[i].weight[x, y] += hid1_layer[j].weight[x, y] * hid1_layer[j].a;
-                                         }
-                                     }
-                                 }
-                             }
-                             hid2_layer[i].a = Neuron.sigmoida(sum - hid2_layer[i].threshold);
-                         }
-                     }
-                 }
-             }
-             for (int i = 0; i < output_layer.Count<Neuron>(); i++)
-             {
-                 if (limit_out - output_layer[i].a > 0.01)
-                 {
-                     double sum = 0.0;
-                     output_layer[i].weight = new double[64, 64];
-                     for (int j = 0; j < hid2_layer.Count<Neuron>(); j++)
-                     {
-                         if (connectOut[i].Contains(Convert.ToInt32(j + 1)))
-                         {
-                             for (int x = 0; x < 64; x++)
-                             {
-                                 for (int y = 0; y < 64; y++)
-                                 {
-                                     sum += hid2_layer[j].weight[x, y] * hid2_layer[j].a;
-                                     output_layer[i].weight[x, y] += hid2_layer[j].weight[x, y] * hid2_layer[j].a;
-                                 }
-                             }
-                         }
-                     }
-                     output_layer[i].a = Neuron.sigmoida(sum - output_layer[i].threshold);
-                 }
-             }
-         }
+        public void run_network()
+        {
+            for (int q = 0; q < output_layer.Count<Neuron>(); q++)
+            {
+                if (limit_out - output_layer[q].a > 0.01)
+                {
+                    for (int q2 = 0; q2 < hid2_layer.Count<Neuron>(); q2++)
+                    {
+                        if (connectOut[q].Contains(Convert.ToInt32(q2 + 1)))
+                        {
+                            for (int i = 0; i < hid1_layer.Count<Neuron>(); i++)
+                            {
+                                if (connect[q2].Contains(Convert.ToInt32(i + 1)))
+                                {
+                                    double sum = 0.0;
+                                    for (int x = 0; x < 64; x++)
+                                    {
+                                        for (int y = 0; y < 64; y++)
+                                        {
+                                            sum += hid1_layer[i].weight[x, y];
+                                        }
+                                    }
+                                    hid1_layer[i].a = Neuron.sigmoida(sum - hid1_layer[i].threshold);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            for (int q = 0; q < output_layer.Count<Neuron>(); q++)
+            {
+                if (limit_out - output_layer[q].a > 0.01)
+                {
+                    for (int i = 0; i < hid2_layer.Count<Neuron>(); i++)
+                    {
+                        if (connectOut[q].Contains(Convert.ToInt32(i + 1)))
+                        {
+                            hid2_layer[i].weight = new double[64, 64];
+                            double sum = 0.0;
+                            for (int j = 0; j < hid1_layer.Count<Neuron>(); j++)
+                            {
+                                if (connect[i].Contains(Convert.ToInt32(j + 1)))
+                                {
+                                    for (int x = 0; x < 64; x++)
+                                    {
+                                        for (int y = 0; y < 64; y++)
+                                        {
+                                            sum += hid1_layer[j].weight[x, y]*hid1_layer[j].a;
+                                            hid2_layer[i].weight[x, y] += hid1_layer[j].weight[x, y]*hid1_layer[j].a;
+                                        }
+                                    }
+                                }
+                            }
+                            hid2_layer[i].a = Neuron.sigmoida(sum - hid2_layer[i].threshold);
+                        }
+                    }
+                }
+            }
+            for (int i = 0; i < output_layer.Count<Neuron>(); i++)
+            {
+                if (limit_out - output_layer[i].a > 0.01)
+                {
+                    double sum = 0.0;
+                    output_layer[i].weight = new double[64, 64];
+                    for (int j = 0; j < hid2_layer.Count<Neuron>(); j++)
+                    {
+                        if (connectOut[i].Contains(Convert.ToInt32(j + 1)))
+                        {
+                            for (int x = 0; x < 64; x++)
+                            {
+                                for (int y = 0; y < 64; y++)
+                                {
+                                    sum += hid2_layer[j].weight[x, y]*hid2_layer[j].a;
+                                    output_layer[i].weight[x, y] += hid2_layer[j].weight[x, y]*hid2_layer[j].a;
+                                }
+                            }
+                        }
+                    }
+                    output_layer[i].a = Neuron.sigmoida(sum - output_layer[i].threshold);
+                }
+            }
+        }
 
-         public void calculate_output_layer_errors()
-         {
-             for (int i = 0; i < output_layer.Count<Neuron>(); i++)
-             {
-                 output_layer[i].error = (limit_out - output_layer[i].a) * output_layer[i].a * (1.0 - output_layer[i].a);
-             }
-         }
+        public void calculate_output_layer_errors()
+        {
+            for (int i = 0; i < output_layer.Count<Neuron>(); i++)
+            {
+                output_layer[i].error = (limit_out - output_layer[i].a)*output_layer[i].a*(1.0 - output_layer[i].a);
+            }
+        }
 
-         public void calculate_hidden_layer2_errors()
-         {
-             for (int i = 0; i < hid2_layer.Count<Neuron>(); i++)
-             {
-                 double sum = 0.0;
-                 for (int j = 0; j < output_layer.Count<Neuron>(); j++)
-                 {
-                     if (connectOut[j].Contains(Convert.ToInt32(i + 1)))
-                     {
-                         for (int x = 0; x < 64; x++)
-                         {
-                             for (int y = 0; y < 64; y++)
-                             {
-                                 sum += output_layer[j].error * hid2_layer[i].weight[x, y];
-                             }
-                         }
-                     }
-                 }
-                 hid2_layer[i].error = hid2_layer[i].a * (1.0 - hid2_layer[i].a) * sum;
-             }
-         }
+        public void calculate_hidden_layer2_errors()
+        {
+            for (int i = 0; i < hid2_layer.Count<Neuron>(); i++)
+            {
+                double sum = 0.0;
+                for (int j = 0; j < output_layer.Count<Neuron>(); j++)
+                {
+                    if (connectOut[j].Contains(Convert.ToInt32(i + 1)))
+                    {
+                        for (int x = 0; x < 64; x++)
+                        {
+                            for (int y = 0; y < 64; y++)
+                            {
+                                sum += output_layer[j].error*hid2_layer[i].weight[x, y];
+                            }
+                        }
+                    }
+                }
+                hid2_layer[i].error = hid2_layer[i].a*(1.0 - hid2_layer[i].a)*sum;
+            }
+        }
 
-         public void calculate_hidden_layer1_errors()
-         {
-             for (int i = 0; i < hid1_layer.Count<Neuron>(); i++)
-             {
-                 double sum = 0.0;
-                 for (int j = 0; j < hid2_layer.Count<Neuron>(); j++)
-                 {
-                     if (connect[j].Contains(Convert.ToInt32(i + 1)))
-                     {
-                         for (int x = 0; x < 64; x++)
-                         {
-                             for (int y = 0; y < 64; y++)
-                             {
-                                 sum += hid2_layer[j].error * hid1_layer[i].weight[x, y];
-                             }
-                         }
-                     }
-                 }
-                 hid1_layer[i].error = hid1_layer[i].a * (1.0 - hid1_layer[i].a) * sum;
-             }
-         }
+        public void calculate_hidden_layer1_errors()
+        {
+            for (int i = 0; i < hid1_layer.Count<Neuron>(); i++)
+            {
+                double sum = 0.0;
+                for (int j = 0; j < hid2_layer.Count<Neuron>(); j++)
+                {
+                    if (connect[j].Contains(Convert.ToInt32(i + 1)))
+                    {
+                        for (int x = 0; x < 64; x++)
+                        {
+                            for (int y = 0; y < 64; y++)
+                            {
+                                sum += hid2_layer[j].error*hid1_layer[i].weight[x, y];
+                            }
+                        }
+                    }
+                }
+                hid1_layer[i].error = hid1_layer[i].a*(1.0 - hid1_layer[i].a)*sum;
+            }
+        }
 
-         public void update_hidden1_weights()
-         {
-             for (int o = 0; o < output_layer.Count<Neuron>(); o++)
-             {
-                 if (limit_out - output_layer[o].a > 0.01)
-                 {
-                     for (int h = 0; h < hid2_layer.Count<Neuron>(); h++)
-                     {
-                         if (connectOut[o].Contains(Convert.ToInt32(h + 1)))
-                         {
-                             for (int i = 0; i < hid1_layer.Count<Neuron>(); i++)
-                             {
-                                 if (connect[h].Contains(Convert.ToInt32(i + 1)))
-                                 {
-                                     for (int j = 0; j < input_signal.Count<double[,]>(); j++)
-                                     {
-                                         if (connectInp[j].Contains(Convert.ToInt32(i + 1)))
-                                         {
-                                             for (int x = 0; x < 64; x++)
-                                             {
-                                                 for (int y = 0; y < 64; y++)
-                                                 {
-                                                     if (hid1_layer[i].weight[x, y] != 0.0)
-                                                     {
-                                                         hid1_layer[i].weight[x, y] = hid1_layer[i].weight[x, y] + speed * hid1_layer[i].error * input_signal[j][x, y];
-                                                     }
-                                                 }
-                                             }
-                                             hid1_layer[i].threshold = hid1_layer[i].threshold - speed * hid1_layer[i].error;
-                                         }
-                                     }
-                                 }
-                             }
-                         }
-                     }
-                 }
-             }
-         }
+        public void update_hidden1_weights()
+        {
+            for (int o = 0; o < output_layer.Count<Neuron>(); o++)
+            {
+                if (limit_out - output_layer[o].a > 0.01)
+                {
+                    for (int h = 0; h < hid2_layer.Count<Neuron>(); h++)
+                    {
+                        if (connectOut[o].Contains(Convert.ToInt32(h + 1)))
+                        {
+                            for (int i = 0; i < hid1_layer.Count<Neuron>(); i++)
+                            {
+                                if (connect[h].Contains(Convert.ToInt32(i + 1)))
+                                {
+                                    for (int j = 0; j < input_signal.Count<double[,]>(); j++)
+                                    {
+                                        if (connectInp[j].Contains(Convert.ToInt32(i + 1)))
+                                        {
+                                            for (int x = 0; x < 64; x++)
+                                            {
+                                                for (int y = 0; y < 64; y++)
+                                                {
+                                                    if (hid1_layer[i].weight[x, y] != 0.0)
+                                                    {
+                                                        hid1_layer[i].weight[x, y] = hid1_layer[i].weight[x, y] +
+                                                                                     speed*hid1_layer[i].error*
+                                                                                     input_signal[j][x, y];
+                                                    }
+                                                }
+                                            }
+                                            hid1_layer[i].threshold = hid1_layer[i].threshold -
+                                                                      speed*hid1_layer[i].error;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
-         public void update_hidden2_weights2()
-         {
-             Random r = new Random();
-             for (int o = 0; o < output_layer.Count<Neuron>(); o++)
-             {
-                 if (limit_out - output_layer[o].a > 0.01)
-                 {
-                     for (int i = 0; i < hid2_layer.Count<Neuron>(); i++)
-                     {
-                         if (connectOut[o].Contains(Convert.ToInt32(i + 1)))
-                         {
-                             for (int j = 0; j < hid1_layer.Count<Neuron>(); j++)
-                             {
-                                 if (connect[i].Contains(Convert.ToInt32(j + 1)))
-                                 {
-                                     for (int x = 0; x < 64; x++)
-                                     {
-                                         for (int y = 0; y < 64; y++)
-                                         {
-                                             if (hid2_layer[i].weight[x, y] != 0.0)
-                                             {
-                                                 hid2_layer[i].weight[x, y] += hid1_layer[j].weight[x, y] + speed * hid2_layer[i].error * hid1_layer[j].a;
-                                             }
-                                         }
-                                     }
-                                 }
-                             }
-                         }
-                         hid2_layer[i].threshold = hid2_layer[i].threshold - speed * hid2_layer[i].error;
-                     }
-                 }
-             }
-         }
+        public void update_hidden2_weights2()
+        {
+            Random r = new Random();
+            for (int o = 0; o < output_layer.Count<Neuron>(); o++)
+            {
+                if (limit_out - output_layer[o].a > 0.01)
+                {
+                    for (int i = 0; i < hid2_layer.Count<Neuron>(); i++)
+                    {
+                        if (connectOut[o].Contains(Convert.ToInt32(i + 1)))
+                        {
+                            for (int j = 0; j < hid1_layer.Count<Neuron>(); j++)
+                            {
+                                if (connect[i].Contains(Convert.ToInt32(j + 1)))
+                                {
+                                    for (int x = 0; x < 64; x++)
+                                    {
+                                        for (int y = 0; y < 64; y++)
+                                        {
+                                            if (hid2_layer[i].weight[x, y] != 0.0)
+                                            {
+                                                hid2_layer[i].weight[x, y] += hid1_layer[j].weight[x, y] +
+                                                                              speed*hid2_layer[i].error*hid1_layer[j].a;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        hid2_layer[i].threshold = hid2_layer[i].threshold - speed*hid2_layer[i].error;
+                    }
+                }
+            }
+        }
 
-         public void update_output_weights2()
-         {
-             Random r = new Random();
-             for (int i = 0; i < output_layer.Count<Neuron>(); i++)
-             {
-                 if (limit_out - output_layer[i].a > 0.01)
-                 {
-                     for (int j = 0; j < hid2_layer.Count<Neuron>(); j++)
-                     {
-                         if (connectOut[i].Contains(Convert.ToInt32(j + 1)))
-                         {
-                             for (int x = 0; x < 64; x++)
-                             {
-                                 for (int y = 0; y < 64; y++)
-                                 {
-                                     if (output_layer[i].weight[x, y] != 0.0)
-                                     {
-                                         output_layer[i].weight[x, y] += hid2_layer[j].weight[x, y] + speed * output_layer[i].error * hid2_layer[j].a;
-                                     }
-                                 }
-                             }
-                         }
-                     }
-                     output_layer[i].threshold = output_layer[i].threshold - speed * output_layer[i].error;
-                 }
-             }
-         }
+        public void update_output_weights2()
+        {
+            Random r = new Random();
+            for (int i = 0; i < output_layer.Count<Neuron>(); i++)
+            {
+                if (limit_out - output_layer[i].a > 0.01)
+                {
+                    for (int j = 0; j < hid2_layer.Count<Neuron>(); j++)
+                    {
+                        if (connectOut[i].Contains(Convert.ToInt32(j + 1)))
+                        {
+                            for (int x = 0; x < 64; x++)
+                            {
+                                for (int y = 0; y < 64; y++)
+                                {
+                                    if (output_layer[i].weight[x, y] != 0.0)
+                                    {
+                                        output_layer[i].weight[x, y] += hid2_layer[j].weight[x, y] +
+                                                                        speed*output_layer[i].error*hid2_layer[j].a;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    output_layer[i].threshold = output_layer[i].threshold - speed*output_layer[i].error;
+                }
+            }
+        }
 
-         public void recognize2()
-         {
-             for (int i = 0; i < hid1_layer.Count<Neuron>(); i++)
-             {
-                 sigma = 0.0;
-                 submit = new double[64, 64];
-                 double sum = 0.0;
-                 for (int x = 0; x < 64; x++)
-                 {
-                     for (int y = 0; y < 64; y++)
-                     {
-                         sum += hid1_layer[i].weight[x, y] * enter[x, y];
-                         submit[x, y] = hid1_layer[i].weight[x, y] * enter[x, y];
-                     }
-                 }
-                 sigma = Neuron.sigmoida(sum - hid1_layer[i].threshold);
-                 recognize_hid1.Add(submit);
-                 recognize_sigm_hid1.Add(sigma);
-             }
-             for (int i = 0; i < hid2_layer.Count<Neuron>(); i++)
-             {
-                 sigma = 0.0;
-                 submit = new double[64, 64];
-                 double sum = 0.0;
-                 for (int j = 0; j < hid1_layer.Count<Neuron>(); j++)
-                 {
-                     if (connect[i].Contains(Convert.ToInt32(j + 1)))
-                     {
-                         for (int x = 0; x < 64; x++)
-                         {
-                             for (int y = 0; y < 64; y++)
-                             {
-                                 submit[x, y] += recognize_hid1[j][x, y] * recognize_sigm_hid1[j];
-                                 sum += recognize_hid1[j][x, y] * recognize_sigm_hid1[j];
-                             }
-                         }
-                     }
-                 }
-                 sigma = Neuron.sigmoida(sum - hid2_layer[i].threshold);
-                 recognize_hid2.Add(submit);
-                 recognize_sigm_hid2.Add(sigma);
-             }
-             for (int i = 0; i < output_layer.Count<Neuron>(); i++)
-             {
-                 sigma = 0.0;
-                 submit = new double[64, 64];
-                 double sum = 0.0;
-                 for (int j = 0; j < hid2_layer.Count<Neuron>(); j++)
-                 {
-                     if (connectOut[i].Contains(Convert.ToInt32(j + 1)))
-                     {
-                         for (int x = 0; x < 64; x++)
-                         {
-                             for (int y = 0; y < 64; y++)
-                             {
-                                 sum += recognize_hid2[j][x, y] * recognize_sigm_hid2[j];
-                                 submit[x, y] += recognize_hid2[j][x, y] * recognize_sigm_hid2[j];
-                             }
-                         }
-                     }
-                 }
-                 sigma = Neuron.sigmoida(sum - output_layer[i].threshold);
-                 recognize_sigm_out.Add(sigma);
-                 recognize_output.Add(submit);
-             }
-         }
+        public void recognize2()
+        {
+            for (int i = 0; i < hid1_layer.Count<Neuron>(); i++)
+            {
+                sigma = 0.0;
+                submit = new double[64, 64];
+                double sum = 0.0;
+                for (int x = 0; x < 64; x++)
+                {
+                    for (int y = 0; y < 64; y++)
+                    {
+                        sum += hid1_layer[i].weight[x, y]*enter[x, y];
+                        submit[x, y] = hid1_layer[i].weight[x, y]*enter[x, y];
+                    }
+                }
+                sigma = Neuron.sigmoida(sum - hid1_layer[i].threshold);
+                recognize_hid1.Add(submit);
+                recognize_sigm_hid1.Add(sigma);
+            }
+            for (int i = 0; i < hid2_layer.Count<Neuron>(); i++)
+            {
+                sigma = 0.0;
+                submit = new double[64, 64];
+                double sum = 0.0;
+                for (int j = 0; j < hid1_layer.Count<Neuron>(); j++)
+                {
+                    if (connect[i].Contains(Convert.ToInt32(j + 1)))
+                    {
+                        for (int x = 0; x < 64; x++)
+                        {
+                            for (int y = 0; y < 64; y++)
+                            {
+                                submit[x, y] += recognize_hid1[j][x, y]*recognize_sigm_hid1[j];
+                                sum += recognize_hid1[j][x, y]*recognize_sigm_hid1[j];
+                            }
+                        }
+                    }
+                }
+                sigma = Neuron.sigmoida(sum - hid2_layer[i].threshold);
+                recognize_hid2.Add(submit);
+                recognize_sigm_hid2.Add(sigma);
+            }
+            for (int i = 0; i < output_layer.Count<Neuron>(); i++)
+            {
+                sigma = 0.0;
+                submit = new double[64, 64];
+                double sum = 0.0;
+                for (int j = 0; j < hid2_layer.Count<Neuron>(); j++)
+                {
+                    if (connectOut[i].Contains(Convert.ToInt32(j + 1)))
+                    {
+                        for (int x = 0; x < 64; x++)
+                        {
+                            for (int y = 0; y < 64; y++)
+                            {
+                                sum += recognize_hid2[j][x, y]*recognize_sigm_hid2[j];
+                                submit[x, y] += recognize_hid2[j][x, y]*recognize_sigm_hid2[j];
+                            }
+                        }
+                    }
+                }
+                sigma = Neuron.sigmoida(sum - output_layer[i].threshold);
+                recognize_sigm_out.Add(sigma);
+                recognize_output.Add(submit);
+            }
+        }
 
         ///////////////--------------------------------------
 
 
-         private void CreateTemplateAndTool(string name, string category, Shape shape)
-         {
-             Template template = new Template(name, shape);
-             toolSetListViewPresenter1.ToolSetController.CreateTemplateTool(template, category);
-             project1.Repository.InsertAll(template);
-         }
-         private void add_tools()
-         {
-             toolSetListViewPresenter1.ToolSetController.Clear();
-             toolSetListViewPresenter1.ToolSetController.AddTool(new SelectionTool(), true);
+        private void CreateTemplateAndTool(string name, string category, Shape shape)
+        {
+            Template template = new Template(name, shape);
+            toolSetListViewPresenter1.ToolSetController.CreateTemplateTool(template, category);
+            project1.Repository.InsertAll(template);
+        }
 
-             string category = "Функции активации";
-             RectangleBase roundedBoxShape = (RectangleBase)project1.ShapeTypes["Box"].CreateInstance();
-             roundedBoxShape.FillStyle = project1.Design.FillStyles.Black;
-             roundedBoxShape.LineStyle = project1.Design.LineStyles.Thick;
-             CreateTemplateAndTool("Сигмоида", category, roundedBoxShape);
+        private void add_tools()
+        {
+            toolSetListViewPresenter1.ToolSetController.Clear();
+            toolSetListViewPresenter1.ToolSetController.AddTool(new SelectionTool(), true);
 
-             category = "Связи";
-             Polyline roundedBoxline = (Polyline)project1.ShapeTypes["Polyline"].CreateInstance();
-             roundedBoxline.EndCapStyle = project1.Design.CapStyles.ClosedArrow;
-             CreateTemplateAndTool("Связь", category, roundedBoxline);
-         }
+            string category = "Функции активации";
+            RectangleBase roundedBoxShape = (RectangleBase) project1.ShapeTypes["Box"].CreateInstance();
+            roundedBoxShape.FillStyle = project1.Design.FillStyles.Black;
+            roundedBoxShape.LineStyle = project1.Design.LineStyles.Thick;
+            CreateTemplateAndTool("Сигмоида", category, roundedBoxShape);
+
+            category = "Связи";
+            Polyline roundedBoxline = (Polyline) project1.ShapeTypes["Polyline"].CreateInstance();
+            roundedBoxline.EndCapStyle = project1.Design.CapStyles.ClosedArrow;
+            CreateTemplateAndTool("Связь", category, roundedBoxline);
+        }
+
         private void Form1_Load(object sender, EventArgs e)
         {
-            char[] Arr = Enumerable.Range(0, 32).Select((int x, int i) => (char)(1040 + i)).ToArray<char>();
-            char[] arr = Enumerable.Range(0, 32).Select((int x, int i) => (char)(1072 + i)).ToArray<char>();
+            char[] Arr = Enumerable.Range(0, 32).Select((int x, int i) => (char) (1040 + i)).ToArray<char>();
+            char[] arr = Enumerable.Range(0, 32).Select((int x, int i) => (char) (1072 + i)).ToArray<char>();
             for (int j = 0; j < Arr.Length; j++)
             {
                 alphabet.Add(Arr[j]);
@@ -438,12 +448,22 @@ namespace Arkenstone
 
         private void button1_Click(object sender, EventArgs e)
         {
+            if (inputList.Count > 0)
+            {
+                var inputArray = inputList.ToArray();
+                connectInp.Add(inputArray);
+            }
+
             openFileDialog1.ShowDialog();
             pictureBox1.Image = Image.FromFile(openFileDialog1.FileName);
             bm1 = (pictureBox1.Image as Bitmap);
             bm1 = new Bitmap(bm1, new Size(64, 64));
             enter = new double[64, 64];
             Operations.GetBinaryPic(bm1, enter);
+
+            inputList.Clear();
+            input_signal.Add(enter);
+
         }
 
         private void pictureBox1_MouseClick(object sender, MouseEventArgs e)
@@ -455,7 +475,7 @@ namespace Arkenstone
                 bm_test = bm1.Clone(new Rectangle(0, 0, 64, 64), bm1.PixelFormat);
                 bm3 = new Bitmap(64, 64);
                 Point p = pictureBox1.PointToClient(Cursor.Position);
-                bm2 = bm1.Clone(new RectangleF((float)(p.X - 10), (float)(p.Y - 8), 20f, 16f), bm1.PixelFormat);
+                bm2 = bm1.Clone(new RectangleF((float) (p.X - 10), (float) (p.Y - 8), 20f, 16f), bm1.PixelFormat);
                 Graphics g = Graphics.FromImage(bm3);
                 g.Clear(Color.White);
                 g.DrawImage(bm2, p.X - 10, p.Y - 8);
@@ -479,21 +499,40 @@ namespace Arkenstone
             Operations.GetBinaryPic(bm3, input);
             hid1_layer.Add(new Neuron(input, count));
             visPriznak.Add(bm3);
-            Picture box = (Picture)project1.ShapeTypes["Picture"].CreateInstance();
-            box.Image = new NamedImage
-            {
-                Image = bm3
-            };
+            Picture box = (Picture) project1.ShapeTypes["Picture"].CreateInstance();
+            box.Image = new NamedImage{ Image = bm3 };
 
 
             box.FillStyle = project1.Design.FillStyles.Transparent;
             box.Data = count.ToString();
             box.Text = box.Data;
+            box.X = StartPoint(box).X;
+            box.Y = StartPoint(box).Y;
             diagram.Shapes.Add(box);
             cachedRepository1.Insert((Shape) box, diagram);
 
             count++;
-            countInp++;
+
+            inputList.Add(Convert.ToInt32(box.Data));
+        }
+
+        public Point StartPoint(Shape boxShape)
+        {
+            var point  = new Point();
+
+            if (diagram.Shapes.Count == 0)
+            {
+                point.X = 40;
+                point.Y = 40;
+            }
+            else
+            {
+                point.X = diagram.Shapes.First().X;
+                point.Y = diagram.Shapes.First().Y + 60;
+            }
+
+
+            return point;
         }
 
         private void cachedRepository1_ConnectionInserted(object sender, RepositoryShapeConnectionEventArgs e)
@@ -504,7 +543,8 @@ namespace Arkenstone
                 last_vertex = e.ConnectorShape.GetConnectionInfo(ControlPointId.LastVertex, null).OtherShape;
                 if (first_vertex.Type.Name == "Picture")
                 {
-                    Operations.Connect_shapes_picture(display1, first_vertex, last_vertex, project1, diagram, cachedRepository1, e);
+                    Operations.Connect_shapes_picture(display1, first_vertex, last_vertex, project1, diagram,
+                        cachedRepository1, e);
                 }
                 if (first_vertex.Type.Name == "Box")
                 {
@@ -525,9 +565,11 @@ namespace Arkenstone
 
                     for (int i = 0; i < shi.Count; i++)
                     {
-                        if (shi[i].OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data != s.Data)
+                        if (shi[i].OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data !=
+                            s.Data)
                         {
-                            string data = shi[i].OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data;
+                            string data =
+                                shi[i].OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data;
                             numList.Add(Convert.ToInt32(data));
                         }
                     }
@@ -565,9 +607,11 @@ namespace Arkenstone
                     var shi = s.GetConnectionInfos(ControlPointId.Any, null).ToList<ShapeConnectionInfo>();
                     for (int i = 0; i < shi.Count; i++)
                     {
-                        if (shi[i].OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data != s.Data)
+                        if (shi[i].OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data !=
+                            s.Data)
                         {
-                            string data = shi[i].OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data;
+                            string data =
+                                shi[i].OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data;
                             numList.Add(Convert.ToInt32(data));
                         }
                     }
@@ -576,15 +620,8 @@ namespace Arkenstone
                     Operations.GetBinaryPic(Operations.shapeDraw(display1, num), input);
                     output_layer.Add(new Neuron(input, count));
                     connectOut.Add(num);
-                    int[] numInp = new int[countInp];
-                    for (int i = 0; i < countInp; i++)
-                    {
-                        numInp[i] = count - countInp + i + 1;
-                    }
-                    connectInp.Add(numInp);
-                    countInp = 0;
-                    input_signal.Add(enter);
-                    
+
+
                 }
                 listBox1.Items.Clear();
                 for (int i = 0; i < connectInp.Count; i++)
@@ -613,5 +650,121 @@ namespace Arkenstone
                 }
             }
         }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            network.Layers.Add(new NetLayer("Output", OutputLayer(diagram, display1)));
+
+            DetectHiddenLayers(diagram, network);
+            
+            foreach (var t in network.Layers)
+            {
+                listBox1.Items.Add(t.Name);
+                foreach (var n in t.Neurons)
+                {
+                    listBox1.Items.Add(n.id);
+                }
+                listBox1.Items.Add("");
+
+            }
+
+        }
+
+
+        public List<Neuron> OutputLayer(Diagram pDiagram, Display pDisplay)
+        {
+            var list = new List<Neuron>();
+            bool containFirst = false;
+            foreach (var s in display1.SelectedShapes)
+            {
+                if (s.Type.Name != "Polyline")
+                {
+                    var shi = s.GetConnectionInfos(ControlPointId.Any, null).ToList<ShapeConnectionInfo>();
+
+                    if (shi.Any(t => t.OtherPointId == ControlPointId.FirstVertex))
+                        containFirst = true;
+                    
+                    if (!containFirst)
+                        list.Add(new Neuron(Convert.ToInt32(s.Data)));
+                }
+            }
+            return list;
+        }
+
+        public void DetectHiddenLayers(Diagram pDiagram, Network pNetwork)
+        {
+            List<Neuron> hiddenList = new List<Neuron>();
+            var outputLayer = pNetwork.Layers.First(layer => layer.Name == "Output");
+
+            foreach (var shi in 
+                (from s in pDiagram.Shapes 
+                from n in outputLayer.Neurons 
+                where n.id == Convert.ToInt32(s.Data) 
+                select s).Select(s => s.GetConnectionInfos(ControlPointId.Any, null)))
+            {
+                hiddenList.AddRange(shi.Select(t => new Neuron(Convert.ToInt32(t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data))));
+            }
+
+            pNetwork.Layers.Add(new NetLayer("Hidden", hiddenList));
+
+            NetLayer hiddenLayer = pNetwork.Layers.First(layer => layer.Name == "Hidden");
+
+            int lay_count = 1;
+
+
+            //ИСПРАВИТЬ НЕПОНЯТНУЮ Х
+
+            while (!IsFirstLayer(pDiagram, hiddenLayer))
+            {
+                hiddenList.Clear();
+                foreach (var shi in
+                (from s in pDiagram.Shapes
+                 from n in hiddenLayer.Neurons.ToArray()
+                 where n.id == Convert.ToInt32(s.Data)
+                 select s).Select(s => s.GetConnectionInfos(ControlPointId.Any, null)))
+                {
+                    hiddenList.AddRange(shi.Select(t => new Neuron(Convert.ToInt32(t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data))));
+                }
+                pNetwork.Layers.Add(new NetLayer(lay_count+"-Hidden", hiddenList));
+
+                hiddenLayer = pNetwork.Layers.First(l => l.Name == lay_count + "-Hidden");
+
+                lay_count++;
+            }
+            if (IsFirstLayer(pDiagram, hiddenLayer))
+            {
+                hiddenList.Clear();
+                foreach (var shi in
+                (from s in pDiagram.Shapes
+                 from n in hiddenLayer.Neurons
+                 where n.id == Convert.ToInt32(s.Data)
+                 select s).Select(s => s.GetConnectionInfos(ControlPointId.Any, null)))
+                {
+                    hiddenList.AddRange(shi.Select(t => new Neuron(Convert.ToInt32(t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data))));
+                }
+                pNetwork.Layers.Add(new NetLayer("Enter", hiddenList));
+            }
+
+        }
+
+        public bool IsFirstLayer(Diagram pDiagram, NetLayer list)
+        {
+            var containEnd = false;
+            foreach (var shi in (from s in pDiagram.Shapes
+                from n in list.Neurons
+                where n.id == Convert.ToInt32(s.Data)
+                select s).Select(s => s.GetConnectionInfos(ControlPointId.Any, null)))
+            {
+                if (shi.Any(t => t.OtherPointId == ControlPointId.LastVertex))
+                    containEnd = true;
+
+                if (!containEnd)
+                    return true;
+            }
+            return false;
+        }
+
+
+
     }
 }

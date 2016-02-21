@@ -51,6 +51,10 @@
             this.button2 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.listBox1 = new System.Windows.Forms.ListBox();
+            this.button4 = new System.Windows.Forms.Button();
+            this.modelController1 = new Dataweb.NShape.Controllers.ModelController();
+            this.modelTreeViewPresenter1 = new Dataweb.NShape.WinFormsUI.ModelTreeViewPresenter();
+            this.treeView1 = new System.Windows.Forms.TreeView();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
@@ -75,7 +79,7 @@
             this.файлToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1168, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1184, 24);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -88,7 +92,7 @@
             // propertyGrid1
             // 
             this.propertyGrid1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.propertyGrid1.Location = new System.Drawing.Point(913, 283);
+            this.propertyGrid1.Location = new System.Drawing.Point(929, 283);
             this.propertyGrid1.Name = "propertyGrid1";
             this.propertyGrid1.Size = new System.Drawing.Size(243, 318);
             this.propertyGrid1.TabIndex = 2;
@@ -142,7 +146,7 @@
             this.display1.SelectionInactiveColor = System.Drawing.Color.Gray;
             this.display1.SelectionInteriorColor = System.Drawing.Color.WhiteSmoke;
             this.display1.SelectionNormalColor = System.Drawing.Color.DarkGreen;
-            this.display1.Size = new System.Drawing.Size(721, 470);
+            this.display1.Size = new System.Drawing.Size(737, 470);
             this.display1.TabIndex = 3;
             this.display1.ToolPreviewBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(119)))), ((int)(((byte)(136)))), ((int)(((byte)(153)))));
             this.display1.ToolPreviewColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(70)))), ((int)(((byte)(130)))), ((int)(((byte)(180)))));
@@ -229,14 +233,49 @@
             this.listBox1.FormattingEnabled = true;
             this.listBox1.Location = new System.Drawing.Point(936, 58);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(220, 199);
+            this.listBox1.Size = new System.Drawing.Size(100, 199);
             this.listBox1.TabIndex = 8;
+            // 
+            // button4
+            // 
+            this.button4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.button4.Location = new System.Drawing.Point(452, 561);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(104, 23);
+            this.button4.TabIndex = 9;
+            this.button4.Text = "Сделать магию";
+            this.button4.UseVisualStyleBackColor = false;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
+            // 
+            // modelController1
+            // 
+            this.modelController1.DiagramSetController = this.diagramSetController1;
+            // 
+            // modelTreeViewPresenter1
+            // 
+            this.modelTreeViewPresenter1.HideDeniedMenuItems = false;
+            this.modelTreeViewPresenter1.ModelTreeController = this.modelController1;
+            this.modelTreeViewPresenter1.PropertyController = this.propertyController1;
+            this.modelTreeViewPresenter1.ShowDefaultContextMenu = true;
+            this.modelTreeViewPresenter1.TreeView = this.treeView1;
+            // 
+            // treeView1
+            // 
+            this.treeView1.FullRowSelect = true;
+            this.treeView1.ImageIndex = 0;
+            this.treeView1.Location = new System.Drawing.Point(1042, 58);
+            this.treeView1.Name = "treeView1";
+            this.treeView1.SelectedImageIndex = 0;
+            this.treeView1.Size = new System.Drawing.Size(120, 199);
+            this.treeView1.TabIndex = 10;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1168, 613);
+            this.ClientSize = new System.Drawing.Size(1184, 613);
+            this.Controls.Add(this.treeView1);
+            this.Controls.Add(this.button4);
             this.Controls.Add(this.listBox1);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);
@@ -282,6 +321,10 @@
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.ListBox listBox1;
+        private System.Windows.Forms.Button button4;
+        private Dataweb.NShape.Controllers.ModelController modelController1;
+        private Dataweb.NShape.WinFormsUI.ModelTreeViewPresenter modelTreeViewPresenter1;
+        private System.Windows.Forms.TreeView treeView1;
     }
 }
 

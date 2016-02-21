@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Arkenstone.Classes
 {
-    internal class Neuron
+    public class Neuron
     {
         public double[,] weight; //весовые коэффициенты
         public double threshold; //Порог
@@ -30,6 +30,11 @@ namespace Arkenstone.Classes
 
             id = count;
 
+        }
+
+        public Neuron(int count)
+        {
+            id = count;
         }
 
         public static double sigmoida(double x)

@@ -8,5 +8,6 @@ namespace Arkenstone.Classes
 {
     class Link
     {
+
     }
 }
