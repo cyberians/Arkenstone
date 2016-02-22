@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -693,56 +694,45 @@ namespace Arkenstone
 
         public void DetectHiddenLayers(Diagram pDiagram, Network pNetwork)
         {
-            List<Neuron> hiddenList = new List<Neuron>();
             var outputLayer = pNetwork.Layers.First(layer => layer.Name == "Output");
 
-            foreach (var shi in 
-                (from s in pDiagram.Shapes 
+            var hiddenList = (
+                from s in pDiagram.Shapes 
                 from n in outputLayer.Neurons 
                 where n.id == Convert.ToInt32(s.Data) 
-                select s).Select(s => s.GetConnectionInfos(ControlPointId.Any, null)))
-            {
-                hiddenList.AddRange(shi.Select(t => new Neuron(Convert.ToInt32(t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data))));
-            }
+                from t in s.GetConnectionInfos(ControlPointId.Any, null) 
+                select new Neuron(Convert.ToInt32(t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data))).ToList();
 
             pNetwork.Layers.Add(new NetLayer("Hidden", hiddenList));
 
-            NetLayer hiddenLayer = pNetwork.Layers.First(layer => layer.Name == "Hidden");
+            var hiddenLayer = pNetwork.Layers.First(layer => layer.Name == "Hidden");
 
             int lay_count = 1;
 
-
-            //ИСПРАВИТЬ НЕПОНЯТНУЮ Х
-
             while (!IsFirstLayer(pDiagram, hiddenLayer))
             {
-                hiddenList.Clear();
-                foreach (var shi in
-                (from s in pDiagram.Shapes
-                 from n in hiddenLayer.Neurons.ToArray()
-                 where n.id == Convert.ToInt32(s.Data)
-                 select s).Select(s => s.GetConnectionInfos(ControlPointId.Any, null)))
-                {
-                    hiddenList.AddRange(shi.Select(t => new Neuron(Convert.ToInt32(t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data))));
-                }
-                pNetwork.Layers.Add(new NetLayer(lay_count+"-Hidden", hiddenList));
+                
+                hiddenList = (
+                    from s in pDiagram.Shapes 
+                    from n in hiddenLayer.Neurons 
+                    where n.id == Convert.ToInt32(s.Data) 
+                    let shi = s.GetConnectionInfos(ControlPointId.Any, null) 
+                    from t in shi 
+                    where t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data != s.Data 
+                    select new Neuron(Convert.ToInt32(t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data))).ToList();
+               
+                pNetwork.Layers.Add(new NetLayer(lay_count + "-Hidden", hiddenList));
 
                 hiddenLayer = pNetwork.Layers.First(l => l.Name == lay_count + "-Hidden");
 
                 lay_count++;
+                
+                
             }
             if (IsFirstLayer(pDiagram, hiddenLayer))
             {
-                hiddenList.Clear();
-                foreach (var shi in
-                (from s in pDiagram.Shapes
-                 from n in hiddenLayer.Neurons
-                 where n.id == Convert.ToInt32(s.Data)
-                 select s).Select(s => s.GetConnectionInfos(ControlPointId.Any, null)))
-                {
-                    hiddenList.AddRange(shi.Select(t => new Neuron(Convert.ToInt32(t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data))));
-                }
-                pNetwork.Layers.Add(new NetLayer("Enter", hiddenList));
+                var enterLayer = pNetwork.Layers.First(l => l.Name == Convert.ToInt32(lay_count-1) + "-Hidden");
+                enterLayer.Name = "Enter";
             }
 
         }
