@@ -139,7 +139,7 @@ namespace Arkenstone.Classes
 
 
 
-        public static void Connect_shapes_picture(Display display1, Shape first_vertex, Shape last_vertex, Project project1, Diagram diagram, CachedRepository cachedRepository1, RepositoryShapeConnectionEventArgs e)
+        public static void Connect_shapes_picture(Display display1, Shape first_vertex, Shape last_vertex, Project project1, Diagram diagram, CachedRepository cachedRepository1, RepositoryShapeConnectionEventArgs e, List<Link> links)
         {
             var new_p = (Picture)project1.ShapeTypes["Picture"].CreateInstance();
 
@@ -167,6 +167,8 @@ namespace Arkenstone.Classes
 
                 e.ConnectorShape.Disconnect(ControlPointId.FirstVertex);
                 e.ConnectorShape.Disconnect(ControlPointId.LastVertex);
+
+                
 
                 e.ConnectorShape.Connect(ControlPointId.FirstVertex, first_vertex, ControlPointId.Reference);
                 e.ConnectorShape.Connect(ControlPointId.LastVertex, new_p, ControlPointId.Reference);

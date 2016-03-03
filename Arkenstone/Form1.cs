@@ -47,6 +47,7 @@ namespace Arkenstone
         List<double> recognize_sigm_out = new List<double>();
 
         List<double[,]> input_signal = new List<double[,]>();
+        List<Link> links = new List<Link>();
 
         double[,] input = new double[64, 64];
 
@@ -498,8 +499,8 @@ namespace Arkenstone
         private void pictureBox1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             Operations.GetBinaryPic(bm3, input);
-            hid1_layer.Add(new Neuron(input, count));
-            visPriznak.Add(bm3);
+            //hid1_layer.Add(new Neuron(input, count));
+            //visPriznak.Add(bm3);
             Picture box = (Picture) project1.ShapeTypes["Picture"].CreateInstance();
             box.Image = new NamedImage{ Image = bm3 };
 
@@ -514,7 +515,7 @@ namespace Arkenstone
 
             count++;
 
-            inputList.Add(Convert.ToInt32(box.Data));
+            //inputList.Add(Convert.ToInt32(box.Data));
         }
 
         public Point StartPoint(Shape boxShape)
@@ -545,7 +546,13 @@ namespace Arkenstone
                 if (first_vertex.Type.Name == "Picture")
                 {
                     Operations.Connect_shapes_picture(display1, first_vertex, last_vertex, project1, diagram,
-                        cachedRepository1, e);
+                        cachedRepository1, e, links);
+
+                    links.Add(new Link(Convert.ToInt32(first_vertex.Data), Convert.ToInt32(last_vertex.Data)));
+
+                    listBox1.Items.Clear();
+                    foreach(var link in links)
+                        listBox1.Items.Add(link.id_out + " --> " + link.id_in);
                 }
                 if (first_vertex.Type.Name == "Box")
                 {
@@ -611,8 +618,7 @@ namespace Arkenstone
                         if (shi[i].OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data !=
                             s.Data)
                         {
-                            string data =
-                                shi[i].OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data;
+                            string data = shi[i].OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data;
                             numList.Add(Convert.ToInt32(data));
                         }
                     }

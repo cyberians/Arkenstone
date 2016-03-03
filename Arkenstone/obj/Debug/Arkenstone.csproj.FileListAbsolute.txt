@@ -10,3 +10,15 @@ E:\Яндекс Диск\Учеба\Диплом\Arkenstone\Arkenstone\obj\Debug
 E:\Яндекс Диск\Учеба\Диплом\Arkenstone\Arkenstone\bin\Debug\Dataweb.NShape.pdb
 E:\Яндекс Диск\Учеба\Диплом\Arkenstone\Arkenstone\bin\Debug\Dataweb.NShape.xml
 E:\Яндекс Диск\Учеба\Диплом\Arkenstone\Arkenstone\bin\Debug\Dataweb.NShape.WinFormsUI.xml
+C:\Users\Vladimir\YandexDisk\Учеба\Диплом\Arkenstone\Arkenstone\bin\Debug\Arkenstone.exe.config
+C:\Users\Vladimir\YandexDisk\Учеба\Диплом\Arkenstone\Arkenstone\obj\Debug\Arkenstone.exe
+C:\Users\Vladimir\YandexDisk\Учеба\Диплом\Arkenstone\Arkenstone\obj\Debug\Arkenstone.pdb
+C:\Users\Vladimir\YandexDisk\Учеба\Диплом\Arkenstone\Arkenstone\bin\Debug\Arkenstone.exe
+C:\Users\Vladimir\YandexDisk\Учеба\Диплом\Arkenstone\Arkenstone\bin\Debug\Arkenstone.pdb
+C:\Users\Vladimir\YandexDisk\Учеба\Диплом\Arkenstone\Arkenstone\bin\Debug\Dataweb.NShape.pdb
+C:\Users\Vladimir\YandexDisk\Учеба\Диплом\Arkenstone\Arkenstone\bin\Debug\Dataweb.NShape.xml
+C:\Users\Vladimir\YandexDisk\Учеба\Диплом\Arkenstone\Arkenstone\bin\Debug\Dataweb.NShape.WinFormsUI.xml
+C:\Users\Vladimir\YandexDisk\Учеба\Диплом\Arkenstone\Arkenstone\obj\Debug\Arkenstone.csprojResolveAssemblyReference.cache
+C:\Users\Vladimir\YandexDisk\Учеба\Диплом\Arkenstone\Arkenstone\obj\Debug\Arkenstone.Form1.resources
+C:\Users\Vladimir\YandexDisk\Учеба\Диплом\Arkenstone\Arkenstone\obj\Debug\Arkenstone.Properties.Resources.resources
+C:\Users\Vladimir\YandexDisk\Учеба\Диплом\Arkenstone\Arkenstone\obj\Debug\Arkenstone.csproj.GenerateResource.Cache

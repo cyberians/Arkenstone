@@ -6,8 +6,15 @@ using System.Threading.Tasks;
 
 namespace Arkenstone.Classes
 {
-    class Link
+    public class Link
     {
+        public int id_out;
+        public int id_in;
 
+        public Link(int idOut, int idIn)
+        {
+            id_out = idOut;
+            id_in = idIn;
+        }
     }
 }
