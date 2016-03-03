@@ -690,9 +690,11 @@ namespace Arkenstone
 
                     if (shi.Any(t => t.OtherPointId == ControlPointId.FirstVertex))
                         containFirst = true;
-                    
+
                     if (!containFirst)
-                        list.Add(new Neuron(Convert.ToInt32(s.Data)));
+                        list.Add(new Neuron(Operations.GetBinaryPic((Bitmap) Operations.newDraw(s), input), Convert.ToInt32(s.Data)));
+                    
+                        
                 }
             }
             return list;
@@ -725,7 +727,7 @@ namespace Arkenstone
                     let shi = s.GetConnectionInfos(ControlPointId.Any, null) 
                     from t in shi 
                     where t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data != s.Data 
-                    select new Neuron(Convert.ToInt32(t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data))).ToList();
+                    select new Neuron(Operations.GetBinaryPic((Bitmap) Operations.newDraw(s), input), Convert.ToInt32(t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data))).ToList();
                
                 pNetwork.Layers.Add(new NetLayer(lay_count + "-Hidden", hiddenList));
 

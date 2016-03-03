@@ -121,7 +121,7 @@ namespace Arkenstone.Classes
             return (Image)bm;
         }
 
-        public static void GetBinaryPic(Bitmap bm, double[,] input)
+        public static double [,] GetBinaryPic(Bitmap bm, double[,] input)
         {
             for (int x = 0; x < 64; x++)
             {
@@ -135,6 +135,7 @@ namespace Arkenstone.Classes
                     input[x, y] = n;
                 }
             }
+            return input;
         }
 
 

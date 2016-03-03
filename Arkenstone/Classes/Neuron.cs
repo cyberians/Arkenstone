@@ -15,7 +15,6 @@ namespace Arkenstone.Classes
         public int id;
 
 
-        public List<int> ConnectNeuronsIds;
         public Neuron(double[,] input, int count)
         {
             weight = new double[64, 64];
@@ -37,7 +36,6 @@ namespace Arkenstone.Classes
         public Neuron(int count)
         {
             id = count;
-            ConnectNeuronsIds = new List<int>();
         }
 
         public static double sigmoida(double x)
