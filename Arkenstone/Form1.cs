@@ -82,6 +82,71 @@ namespace Arkenstone
 
         /////////////--------НЕЙРОСЕТЕВЫЕ АЛГОРИТМЫ
 
+        public void run_network_new()
+        {
+            foreach (var input_neuron in network.Layers[0].Neurons)
+            {
+                double sum = 0;
+                for (var x = 0; x < 64; x++)
+                {
+                    for (var y = 0; y < 64; y++)
+                    {
+                        sum += input_neuron.weight[x, y];
+                    }
+                }
+                input_neuron.a = Neuron.sigmoida(sum - input_neuron.threshold);
+            }
+
+            foreach (var t in network.Layers.Where(t => t.Name != "Enter"))
+            {
+                foreach (var neuron in t.Neurons)
+                {
+                    double sum = 0;
+                    foreach (var link in links.Where(link => link.id_in == neuron.id))
+                    {
+                        for (var x = 0; x < neuron.weight.GetLength(0); x++)
+                        {
+                            for (var y = 0; y < neuron.weight.GetLength(1); y++)
+                            {
+                                foreach (var layer in network.Layers.Where(layer => layer.LayerNumber == layer.LayerNumber+1))
+                                {
+                                    foreach (var input_neuron in layer.Neurons.Where(input_neuron => link.id_out == input_neuron.id))
+                                    {
+                                        sum = input_neuron.weight[x, y] * input_neuron.a;
+                                        neuron.weight[x, y] += input_neuron.weight[x, y] * input_neuron.a;
+                                    }
+                                }
+                               
+                            }
+                        }
+                    }
+                    neuron.a = Neuron.sigmoida(sum - neuron.threshold);
+                }
+            }
+        }
+
+        public void calculate_output_layer_errors_new()
+        {
+            foreach (var neuron in network.Layers[network.Layers.Count - 1].Neurons)
+                neuron.error = (limit_out - neuron.a)*neuron.a*(1.0 - neuron.a);
+        }
+
+        public void calculate_hidden_layers_errors()
+        {
+            //foreach (var layer in network.Layers.Where(layer => layer.Name != "Enter"))
+            //{
+            //    foreach (var neuron in layer.Neurons)
+            //    {
+            //        foreach (var link in links.Where(link => link.id_in == neuron.id))
+            //        {
+            //            foreach (var link in links.Where(link => link.id_in == neuron.id))
+            //            {
+                            
+            //            }
+            //        }
+            //    }
+            //}
+        }
 
         public void run_network()
         {
@@ -760,6 +825,31 @@ namespace Arkenstone
                     return true;
             }
             return false;
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            testForm tf = new testForm();
+
+            string test = "";
+
+            foreach (var layer in network.Layers)
+            {
+                foreach (var neuron in layer.Neurons)
+                {
+                    test = "";
+                    for (int i = 0; i < neuron.weight.GetLength(0); i++)
+                    {
+                        for (int j = 0; j < neuron.weight.GetLength(1); j++)
+                        {
+                            test += neuron.weight[i, j] + " ";
+                        }
+                        test += "\n";
+                    }
+                    tf.richTextBox1.Text = test;
+                    tf.ShowDialog();
+                }
+            }
         }
 
 

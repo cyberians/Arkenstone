@@ -10,11 +10,14 @@ namespace Arkenstone.Classes
     {
         public List<Neuron> Neurons;
         public string Name;
+        public static int ID = 0;
+        public int LayerNumber;
 
         public NetLayer(string name, List<Neuron> neurons)
         {
             Neurons = neurons;
             Name = name;
+            LayerNumber = ID++;
         }
     }
 }

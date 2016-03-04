@@ -55,6 +55,7 @@
             this.modelController1 = new Dataweb.NShape.Controllers.ModelController();
             this.modelTreeViewPresenter1 = new Dataweb.NShape.WinFormsUI.ModelTreeViewPresenter();
             this.treeView1 = new System.Windows.Forms.TreeView();
+            this.button5 = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
@@ -269,11 +270,22 @@
             this.treeView1.Size = new System.Drawing.Size(120, 199);
             this.treeView1.TabIndex = 10;
             // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(607, 542);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(75, 23);
+            this.button5.TabIndex = 11;
+            this.button5.Text = "test";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1184, 613);
+            this.Controls.Add(this.button5);
             this.Controls.Add(this.treeView1);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.listBox1);
@@ -325,6 +337,7 @@
         private Dataweb.NShape.Controllers.ModelController modelController1;
         private Dataweb.NShape.WinFormsUI.ModelTreeViewPresenter modelTreeViewPresenter1;
         private System.Windows.Forms.TreeView treeView1;
+        private System.Windows.Forms.Button button5;
     }
 }
 

@@ -22,3 +22,4 @@ C:\Users\Vladimir\YandexDisk\Учеба\Диплом\Arkenstone\Arkenstone\obj\D
 C:\Users\Vladimir\YandexDisk\Учеба\Диплом\Arkenstone\Arkenstone\obj\Debug\Arkenstone.Form1.resources
 C:\Users\Vladimir\YandexDisk\Учеба\Диплом\Arkenstone\Arkenstone\obj\Debug\Arkenstone.Properties.Resources.resources
 C:\Users\Vladimir\YandexDisk\Учеба\Диплом\Arkenstone\Arkenstone\obj\Debug\Arkenstone.csproj.GenerateResource.Cache
+C:\Users\Vladimir\YandexDisk\Учеба\Диплом\Arkenstone\Arkenstone\obj\Debug\Arkenstone.testForm.resources
