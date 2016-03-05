@@ -84,7 +84,7 @@ namespace Arkenstone
 
         public void run_network_new()
         {
-            foreach (var input_neuron in network.Layers[0].Neurons)
+            foreach (var input_neuron in network.Layers[network.Layers.Count-1].Neurons)
             {
                 double sum = 0;
                 for (var x = 0; x < 64; x++)
@@ -104,19 +104,23 @@ namespace Arkenstone
                     double sum = 0;
                     foreach (var link in links.Where(link => link.id_in == neuron.id))
                     {
-                        for (var x = 0; x < neuron.weight.GetLength(0); x++)
+                        foreach (var layer in network.Layers.Where(layer => layer.LayerNumber == t.LayerNumber + 1)) 
                         {
-                            for (var y = 0; y < neuron.weight.GetLength(1); y++)
+                            for (var x = 0; x < neuron.weight.GetLength(0); x++)
                             {
-                                foreach (var layer in network.Layers.Where(layer => layer.LayerNumber == layer.LayerNumber+1))
+                                for (var y = 0; y < neuron.weight.GetLength(1); y++)
                                 {
-                                    foreach (var input_neuron in layer.Neurons.Where(input_neuron => link.id_out == input_neuron.id))
+
+                                    foreach (
+                                        var input_neuron in
+                                            layer.Neurons.Where(input_neuron => link.id_out == input_neuron.id))
                                     {
                                         sum = input_neuron.weight[x, y] * input_neuron.a;
                                         neuron.weight[x, y] += input_neuron.weight[x, y] * input_neuron.a;
                                     }
+
+
                                 }
-                               
                             }
                         }
                     }
@@ -749,6 +753,7 @@ namespace Arkenstone
             bool containFirst = false;
             foreach (var s in display1.SelectedShapes)
             {
+                input = new double[64,64];
                 if (s.Type.Name != "Polyline")
                 {
                     var shi = s.GetConnectionInfos(ControlPointId.Any, null).ToList<ShapeConnectionInfo>();
@@ -773,8 +778,9 @@ namespace Arkenstone
                 from s in pDiagram.Shapes 
                 from n in outputLayer.Neurons 
                 where n.id == Convert.ToInt32(s.Data) 
-                from t in s.GetConnectionInfos(ControlPointId.Any, null) 
-                select new Neuron(Convert.ToInt32(t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data))).ToList();
+                from t in s.GetConnectionInfos(ControlPointId.Any, null)
+                select new Neuron(Operations.GetBinaryPic((Bitmap)Operations.newDraw(pDiagram.Shapes.First(shape => shape.Data == t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data)), input), 
+                                    Convert.ToInt32(t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data))).ToList();
 
             pNetwork.Layers.Add(new NetLayer("Hidden", hiddenList));
 
@@ -791,8 +797,9 @@ namespace Arkenstone
                     where n.id == Convert.ToInt32(s.Data) 
                     let shi = s.GetConnectionInfos(ControlPointId.Any, null) 
                     from t in shi 
-                    where t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data != s.Data 
-                    select new Neuron(Operations.GetBinaryPic((Bitmap) Operations.newDraw(s), input), Convert.ToInt32(t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data))).ToList();
+                    where t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data != s.Data
+                    select new Neuron(Operations.GetBinaryPic((Bitmap)Operations.newDraw(pDiagram.Shapes.First(shape => shape.Data == t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data)), input), 
+                                        Convert.ToInt32(t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data))).ToList();
                
                 pNetwork.Layers.Add(new NetLayer(lay_count + "-Hidden", hiddenList));
 
@@ -829,6 +836,7 @@ namespace Arkenstone
 
         private void button5_Click(object sender, EventArgs e)
         {
+            run_network_new();
             testForm tf = new testForm();
 
             string test = "";
@@ -847,6 +855,7 @@ namespace Arkenstone
                         test += "\n";
                     }
                     tf.richTextBox1.Text = test;
+                    MessageBox.Show(neuron.id.ToString());
                     tf.ShowDialog();
                 }
             }

@@ -123,6 +123,7 @@ namespace Arkenstone.Classes
 
         public static double [,] GetBinaryPic(Bitmap bm, double[,] input)
         {
+            input = new double[64,64];
             for (int x = 0; x < 64; x++)
             {
                 for (int y = 0; y < 64; y++)
