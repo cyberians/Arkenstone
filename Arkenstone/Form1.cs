@@ -131,25 +131,34 @@ namespace Arkenstone
 
         public void calculate_output_layer_errors_new()
         {
-            foreach (var neuron in network.Layers[network.Layers.Count - 1].Neurons)
+            foreach (var neuron in network.Layers.First(layer => layer.Name == "Output").Neurons)
                 neuron.error = (limit_out - neuron.a)*neuron.a*(1.0 - neuron.a);
         }
 
+
+        //Несостыковка слоёв, надо решить
         public void calculate_hidden_layers_errors()
         {
-            //foreach (var layer in network.Layers.Where(layer => layer.Name != "Enter"))
-            //{
-            //    foreach (var neuron in layer.Neurons)
-            //    {
-            //        foreach (var link in links.Where(link => link.id_in == neuron.id))
-            //        {
-            //            foreach (var link in links.Where(link => link.id_in == neuron.id))
-            //            {
-                            
-            //            }
-            //        }
-            //    }
-            //}
+            foreach (var t in network.Layers.Where(layer => layer.Name != "Enter"))
+            {
+                foreach (var neuron in t.Neurons)
+                {
+                    double sum = 0.0;
+                    foreach (var link in links.Where(link => link.id_out == neuron.id))
+                    {
+                        foreach (var layer in network.Layers.Where(layer => layer.LayerNumber == t.LayerNumber + 1))
+                        {
+                            for (var x = 0; x < neuron.weight.GetLength(0); x++)
+                            {
+                                for (var y = 0; y < neuron.weight.GetLength(1); y++)
+                                {
+                                    
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         public void run_network()
@@ -836,29 +845,32 @@ namespace Arkenstone
 
         private void button5_Click(object sender, EventArgs e)
         {
+
             run_network_new();
-            testForm tf = new testForm();
+            calculate_output_layer_errors_new();
+            calculate_hidden_layers_errors();
+            //testForm tf = new testForm();
 
-            string test = "";
+            //string test = "";
 
-            foreach (var layer in network.Layers)
-            {
-                foreach (var neuron in layer.Neurons)
-                {
-                    test = "";
-                    for (int i = 0; i < neuron.weight.GetLength(0); i++)
-                    {
-                        for (int j = 0; j < neuron.weight.GetLength(1); j++)
-                        {
-                            test += neuron.weight[i, j] + " ";
-                        }
-                        test += "\n";
-                    }
-                    tf.richTextBox1.Text = test;
-                    MessageBox.Show(neuron.id.ToString());
-                    tf.ShowDialog();
-                }
-            }
+            //foreach (var layer in network.Layers)
+            //{
+            //    foreach (var neuron in layer.Neurons)
+            //    {
+            //        test = "";
+            //        for (int i = 0; i < neuron.weight.GetLength(0); i++)
+            //        {
+            //            for (int j = 0; j < neuron.weight.GetLength(1); j++)
+            //            {
+            //                test += neuron.weight[i, j] + " ";
+            //            }
+            //            test += "\n";
+            //        }
+            //        tf.richTextBox1.Text = test;
+            //        MessageBox.Show(neuron.id.ToString());
+            //        tf.ShowDialog();
+            //    }
+            //}
         }
 
 
