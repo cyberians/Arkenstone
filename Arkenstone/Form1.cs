@@ -136,28 +136,33 @@ namespace Arkenstone
         }
 
 
-        //Несостыковка слоёв, надо решить
         public void calculate_hidden_layers_errors()
         {
-            foreach (var t in network.Layers.Where(layer => layer.Name != "Enter"))
+            foreach (var t in network.Layers)
             {
                 foreach (var neuron in t.Neurons)
                 {
                     double sum = 0.0;
-                    foreach (var link in links.Where(link => link.id_out == neuron.id))
+                    foreach (var link in links.Where(link => link.id_in == neuron.id))
                     {
-                        foreach (var layer in network.Layers.Where(layer => layer.LayerNumber == t.LayerNumber + 1))
+                        foreach (var layer in network.Layers.Where(layer => layer.LayerNumber == t.LayerNumber - 1))
                         {
                             for (var x = 0; x < neuron.weight.GetLength(0); x++)
                             {
                                 for (var y = 0; y < neuron.weight.GetLength(1); y++)
                                 {
-                                    
+                                    sum += layer.Neurons.
+                                        Where(output_neuron => link.id_out == output_neuron.id).
+                                        Sum(output_neuron => output_neuron.error*neuron.weight[x, y]);
                                 }
                             }
+                            //MessageBox.Show("Сейчас обрабатываются слои:\n\n" + t.Name + " и " + layer.Name);
                         }
                     }
+                    neuron.error = neuron.a*(1.0 - neuron.a)*sum;
+                    MessageBox.Show("НЕейроны");
                 }
+                MessageBox.Show("Дошел до сюда. слои");
             }
         }
 
