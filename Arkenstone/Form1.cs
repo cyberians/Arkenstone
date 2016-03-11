@@ -169,9 +169,45 @@ namespace Arkenstone
 
         public void update_hidden_weights()
         {
-            foreach (var layer in network.Layers.OrderByDescending(x => x.LayerNumber))
+            foreach (var neuron in network.Layers[network.Layers.Count-1].Neurons)
             {
+                foreach (var outNeuron in network.Layers[0].Neurons)
+                {
+                    if (IsLinked(neuron.id, outNeuron.id))
+                    {
+                        for (int x = 0; x < neuron.weight.GetLength(0); x++)
+                        {
+                            for (int y = 0; y < neuron.weight.GetLength(1); y++)
+                            {
+                                neuron.weight[x, y] = neuron.weight[x, y] + speed * neuron.error;
+                            }
+                        }
+                        neuron.threshold = neuron.threshold - speed * neuron.error;
+                    }
+                }
                 
+            }
+
+            foreach (var layer in network.Layers.OrderByDescending(x => x.LayerNumber).Where(layer => layer.Name != "Enter"))
+            {
+                foreach (var neuron in layer.Neurons)
+                {
+                    foreach (var prevNeuron in network.Layers.First(x => x.LayerNumber + 1 == layer.LayerNumber).Neurons)
+                    {
+                        if (IsLinked(prevNeuron.id, neuron.id))
+                        {
+                            for (int x = 0; x < neuron.weight.GetLength(0); x++)
+                            {
+                                for (int y = 0; y < neuron.weight.GetLength(1); y++)
+                                {
+                                    neuron.weight[x, y] = prevNeuron.weight[x, y] + speed*neuron.error*prevNeuron.a;
+                                }
+                            }
+                            neuron.threshold = neuron.threshold - speed*neuron.error;
+                        }
+                    }
+                }
+               
             }
         }
         //надо дописать, почти работает
@@ -179,28 +215,24 @@ namespace Arkenstone
         {
             int first = firstNeuron;
             bool linked = false;
-            bool flag = true;
-            while (linked != true|| flag != false)
+            bool flag = false;
+            while (!linked && !flag)
             {
-                foreach (var link in links)
+                foreach (var link in links.Where(link => link.id_out == first))
                 {
-                    if (link.id_out == first)
+                    if (link.id_in == lastNeuron)
                     {
-                        if (link.id_in == lastNeuron)
-                        {
-                            linked = true;
-                        }
-                        else
-                        {
-                            first = link.id_in;
-                        }
+                        linked = true;
                     }
                     else
                     {
-                        flag = false;
-                        break;
+                        first = link.id_in;
                     }
+                    
                 }
+                if (links.Where(link => link.id_out == first).ToList().Count < 1)
+                    flag = true;
+
             }
             return linked;
 
@@ -684,45 +716,22 @@ namespace Arkenstone
 
         private void button2_Click(object sender, EventArgs e)
         {
-            if (display1.SelectedShapes.Count > 0)
+            for (int j = 0; j < alphabet.Count(); j++)
             {
-                connect.Clear();
-                foreach (Shape s in display1.SelectedShapes)
+                while (limit_out - network.Layers[0].Neurons[j].a > 0.01)
                 {
-                    List<int> numList = new List<int>();
+                    run_network_new();
 
-                    var shi = s.GetConnectionInfos(ControlPointId.Any, null).ToList<ShapeConnectionInfo>();
+                    calculate_output_layer_errors();
+                    calculate_hidden_layer2_errors();
+                    calculate_hidden_layer1_errors();
 
-                    for (int i = 0; i < shi.Count; i++)
-                    {
-                        if (shi[i].OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data !=
-                            s.Data)
-                        {
-                            string data =
-                                shi[i].OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data;
-                            numList.Add(Convert.ToInt32(data));
-                        }
-                    }
+                    update_output_weights2();
+                    update_hidden2_weights2();
+                    update_hidden1_weights();
 
-                    int[] num = numList.ToArray();
-                    visGrPriznak.Add(Operations.shapeDraw(display1, num));
-                    Operations.GetBinaryPic(Operations.shapeDraw(display1, num), input);
-                    hid2_layer.Add(new Neuron(input, count));
-                    connect.Add(num);
-                    countgr2++;
                 }
-                for (int i = 0; i < connect.Count; i++)
-                {
-                    listBox1.Items.Add(Convert.ToInt32(i + 1) + "-й коннект");
-                    for (int j = 0; j < connect[i].Count<int>(); j++)
-                    {
-                        listBox1.Items.Add(connect[i][j]);
-                    }
-                }
-            }
-            else
-            {
-                MessageBox.Show("Выберите нейроны");
+
             }
         }
 
@@ -920,11 +929,7 @@ namespace Arkenstone
 
         private void button6_Click(object sender, EventArgs e)
         {
-            if(IsLinked(Convert.ToInt32(textBox1.Text), Convert.ToInt32(textBox2.Text)));
-                MessageBox.Show("Да");
+            MessageBox.Show(IsLinked(Convert.ToInt32(textBox1.Text), Convert.ToInt32(textBox2.Text)) ? "Да" : "Нет");
         }
-
-
-
     }
 }
