@@ -131,7 +131,7 @@ namespace Arkenstone
 
         public void calculate_output_layer_errors_new()
         {
-            foreach (var neuron in network.Layers.First(layer => layer.Name == "Output").Neurons)
+            foreach (var neuron in network.Layers[0].Neurons)
                 neuron.error = (limit_out - neuron.a)*neuron.a*(1.0 - neuron.a);
         }
 
@@ -143,7 +143,7 @@ namespace Arkenstone
                 foreach (var neuron in t.Neurons)
                 {
                     double sum = 0.0;
-                    foreach (var link in links.Where(link => link.id_in == neuron.id))
+                    foreach (var link in links.Where(link => link.id_out == neuron.id))
                     {
                         foreach (var layer in network.Layers.Where(layer => layer.LayerNumber == t.LayerNumber - 1))
                         {
@@ -152,20 +152,59 @@ namespace Arkenstone
                                 for (var y = 0; y < neuron.weight.GetLength(1); y++)
                                 {
                                     sum += layer.Neurons.
-                                        Where(output_neuron => link.id_out == output_neuron.id).
+                                        Where(output_neuron => link.id_in == output_neuron.id).
                                         Sum(output_neuron => output_neuron.error*neuron.weight[x, y]);
                                 }
                             }
                             //MessageBox.Show("Сейчас обрабатываются слои:\n\n" + t.Name + " и " + layer.Name);
                         }
+                        //MessageBox.Show("Текущий линк: " + link.id_out + " - " + link.id_in);
                     }
                     neuron.error = neuron.a*(1.0 - neuron.a)*sum;
-                    MessageBox.Show("НЕейроны");
+                    //MessageBox.Show("НЕейроны");
                 }
-                MessageBox.Show("Дошел до сюда. слои");
+                //MessageBox.Show("Дошел до сюда. слой - "+t.Name);
             }
         }
 
+        public void update_hidden_weights()
+        {
+            foreach (var layer in network.Layers.OrderByDescending(x => x.LayerNumber))
+            {
+                
+            }
+        }
+        //надо дописать, почти работает
+        public bool IsLinked(int firstNeuron, int lastNeuron)
+        {
+            int first = firstNeuron;
+            bool linked = false;
+            bool flag = true;
+            while (linked != true|| flag != false)
+            {
+                foreach (var link in links)
+                {
+                    if (link.id_out == first)
+                    {
+                        if (link.id_in == lastNeuron)
+                        {
+                            linked = true;
+                        }
+                        else
+                        {
+                            first = link.id_in;
+                        }
+                    }
+                    else
+                    {
+                        flag = false;
+                        break;
+                    }
+                }
+            }
+            return linked;
+
+        }
         public void run_network()
         {
             for (int q = 0; q < output_layer.Count<Neuron>(); q++)
@@ -851,9 +890,9 @@ namespace Arkenstone
         private void button5_Click(object sender, EventArgs e)
         {
 
-            run_network_new();
-            calculate_output_layer_errors_new();
-            calculate_hidden_layers_errors();
+            //run_network_new();
+            //calculate_output_layer_errors_new();
+            //calculate_hidden_layers_errors();
             //testForm tf = new testForm();
 
             //string test = "";
@@ -876,6 +915,13 @@ namespace Arkenstone
             //        tf.ShowDialog();
             //    }
             //}
+            update_hidden_weights();
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            if(IsLinked(Convert.ToInt32(textBox1.Text), Convert.ToInt32(textBox2.Text)));
+                MessageBox.Show("Да");
         }
 
 
