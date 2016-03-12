@@ -237,6 +237,118 @@ namespace Arkenstone
             return linked;
 
         }
+
+        public void RecognizeLetter()
+        {
+            var recognizeNetwork = new Network();
+
+            double sum = 0;
+
+            //foreach (var layer in network.Layers.OrderByDescending(x => x.LayerNumber))
+            //{
+            //    recognizeNetwork.Layers.Add(new NetLayer());
+            //    foreach (var neuron in layer.Neurons)
+            //    {
+            //        submit = new double[neuron.weight.GetLength(0),neuron.weight.GetLength(1)];
+
+            //        sigma = 0;
+            //        sum = 0;
+
+            //        for (int x = 0; x < neuron.weight.GetLength(0); x++)
+            //        {
+            //            for (int y = 0; y < neuron.weight.GetLength(1); y++)
+            //            {
+            //                sum += neuron.weight[x, y]*enter[x, y];
+            //                submit[x, y] = neuron.weight[x, y]*enter[x, y];
+            //            }
+            //        }
+            //        sigma = Neuron.sigmoida(sum - neuron.threshold);
+
+            //        recognizeNetwork.Layers.OrderBy(x => x.LayerNumber).Last().RecognizedList.Add(submit);
+            //    }
+            //}
+
+            //обход 1-го скрытого слоя
+
+            //for (int i = 0; i < hid1_layer.Count(); i++)
+            //{
+            //    sigma = 0;
+            //    submit = new double[64, 64];
+            //    sum = 0;
+            //    for (int x = 0; x < 64; x++)
+            //    {
+            //        for (int y = 0; y < 64; y++)
+            //        {
+            //            sum += hid1_layer[i].weight[x, y] * enter[x, y];
+            //            submit[x, y] = hid1_layer[i].weight[x, y] * enter[x, y];
+            //        }
+            //    }
+
+            //    sigma = sigmoida(sum - hid1_layer[i].threshold);
+
+            //    recognize_hid1.Add(submit);
+            //    recognize_sigm_hid1.Add(sigma);
+
+            //}
+
+            ////обход 2-го скрытого слоя
+            //for (int i = 0; i < hid2_layer.Count(); i++)
+            //{
+            //    sigma = 0;
+            //    submit = new double[64, 64];
+            //    test = "";
+            //    sum = 0;
+            //    for (int j = 0; j < hid1_layer.Count(); j++)
+            //    {
+            //        if (connect[i].Contains(Convert.ToInt32(j + 1)))
+            //        {
+                       
+            //            for (int x = 0; x < 64; x++)
+            //            {
+            //                for (int y = 0; y < 64; y++)
+            //                {
+            //                    submit[x, y] += recognize_hid1[j][x, y] * recognize_sigm_hid1[j];
+            //                    sum += recognize_hid1[j][x, y] * recognize_sigm_hid1[j];
+            //                }
+            //            }
+                        
+            //        }
+            //    }
+            //    sigma = sigmoida(sum - hid2_layer[i].threshold);
+            //    recognize_hid2.Add(submit);
+            //    recognize_sigm_hid2.Add(sigma);
+
+                
+               
+            //}
+            ////обход выходного слоя
+            //for (int i = 0; i < output_layer.Count(); i++)
+            //{
+            //    sigma = 0;
+            //    submit = new double[64, 64];
+            //    test = "";
+            //    sum = 0;
+            //    for (int j = 0; j < hid2_layer.Count(); j++)
+            //    {
+            //        if (connectOut[i].Contains(Convert.ToInt32(j + 1)))
+            //        {
+                        
+            //            for (int x = 0; x < 64; x++)
+            //            {
+            //                for (int y = 0; y < 64; y++)
+            //                {
+            //                    sum += recognize_hid2[j][x, y] * recognize_sigm_hid2[j];
+            //                    submit[x, y] += recognize_hid2[j][x, y] * recognize_sigm_hid2[j];
+            //                }
+            //            }
+                        
+            //        }
+            //    }
+            //    sigma = sigmoida(sum - output_layer[i].threshold);
+            //    recognize_sigm_out.Add(sigma);
+            //    recognize_output.Add(submit);
+            //resd
+        }
         public void run_network()
         {
             for (int q = 0; q < output_layer.Count<Neuron>(); q++)
@@ -722,13 +834,9 @@ namespace Arkenstone
                 {
                     run_network_new();
 
-                    calculate_output_layer_errors();
-                    calculate_hidden_layer2_errors();
-                    calculate_hidden_layer1_errors();
-
-                    update_output_weights2();
-                    update_hidden2_weights2();
-                    update_hidden1_weights();
+                    calculate_output_layer_errors_new();
+                    calculate_hidden_layers_errors();
+                    update_hidden_weights();
 
                 }
 

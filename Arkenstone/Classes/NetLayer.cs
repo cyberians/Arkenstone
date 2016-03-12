@@ -13,10 +13,18 @@ namespace Arkenstone.Classes
         public static int ID = 0;
         public int LayerNumber;
 
+        public List<double[,]> RecognizedList;
+
         public NetLayer(string name, List<Neuron> neurons)
         {
             Neurons = neurons;
             Name = name;
+            LayerNumber = ID++;
+        }
+
+        public NetLayer()
+        {
+            RecognizedList = new List<double[,]>();
             LayerNumber = ID++;
         }
     }
