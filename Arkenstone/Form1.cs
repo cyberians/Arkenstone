@@ -348,6 +348,7 @@ namespace Arkenstone
             //    recognize_sigm_out.Add(sigma);
             //    recognize_output.Add(submit);
             //resd
+            //test
         }
         public void run_network()
         {
