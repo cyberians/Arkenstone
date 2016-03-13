@@ -79,6 +79,7 @@ namespace Arkenstone
         Shape last_vertex;
 
         Network network = new Network();
+        Network recognizeNetwork;
 
         /////////////--------НЕЙРОСЕТЕВЫЕ АЛГОРИТМЫ
 
@@ -173,7 +174,7 @@ namespace Arkenstone
             {
                 foreach (var outNeuron in network.Layers[0].Neurons)
                 {
-                    if (IsLinked(neuron.id, outNeuron.id))
+                    if (IsLinkedGlobal(neuron.id, outNeuron.id))
                     {
                         for (int x = 0; x < neuron.weight.GetLength(0); x++)
                         {
@@ -194,7 +195,7 @@ namespace Arkenstone
                 {
                     foreach (var prevNeuron in network.Layers.First(x => x.LayerNumber + 1 == layer.LayerNumber).Neurons)
                     {
-                        if (IsLinked(prevNeuron.id, neuron.id))
+                        if (IsLinkedGlobal(prevNeuron.id, neuron.id))
                         {
                             for (int x = 0; x < neuron.weight.GetLength(0); x++)
                             {
@@ -210,8 +211,7 @@ namespace Arkenstone
                
             }
         }
-        //надо дописать, почти работает
-        public bool IsLinked(int firstNeuron, int lastNeuron)
+        public bool IsLinkedGlobal(int firstNeuron, int lastNeuron)
         {
             int first = firstNeuron;
             bool linked = false;
@@ -238,35 +238,85 @@ namespace Arkenstone
 
         }
 
+
+        public bool IsLinkedLocal(int firstNeuron, int lastNeuron)
+        {
+            int first = firstNeuron;
+            bool linked = false;
+            
+            foreach (var link in links.Where(link => link.id_out == first).Where(link => link.id_in == lastNeuron))
+            {
+                linked = true;
+            }
+
+            
+            return linked;
+        }
         public void RecognizeLetter()
         {
-            var recognizeNetwork = new Network();
+            recognizeNetwork = new Network();
 
             double sum = 0;
+            recognizeNetwork.Layers.Add(new NetLayer());
 
-            //foreach (var layer in network.Layers.OrderByDescending(x => x.LayerNumber))
-            //{
-            //    recognizeNetwork.Layers.Add(new NetLayer());
-            //    foreach (var neuron in layer.Neurons)
-            //    {
-            //        submit = new double[neuron.weight.GetLength(0),neuron.weight.GetLength(1)];
+            foreach (var neuron in network.Layers[network.Layers.Count - 1].Neurons)
+            {
+                submit = new double[neuron.weight.GetLength(0), neuron.weight.GetLength(1)];
 
-            //        sigma = 0;
-            //        sum = 0;
+                sigma = 0;
+                sum = 0;
 
-            //        for (int x = 0; x < neuron.weight.GetLength(0); x++)
-            //        {
-            //            for (int y = 0; y < neuron.weight.GetLength(1); y++)
-            //            {
-            //                sum += neuron.weight[x, y]*enter[x, y];
-            //                submit[x, y] = neuron.weight[x, y]*enter[x, y];
-            //            }
-            //        }
-            //        sigma = Neuron.sigmoida(sum - neuron.threshold);
+                for (int x = 0; x < neuron.weight.GetLength(0); x++)
+                {
+                    for (int y = 0; y < neuron.weight.GetLength(1); y++)
+                    {
+                        sum += neuron.weight[x, y] * enter[x, y];
+                        submit[x, y] = neuron.weight[x, y] * enter[x, y];
+                    }
+                }
+                sigma = Neuron.sigmoida(sum - neuron.threshold);
 
-            //        recognizeNetwork.Layers.OrderBy(x => x.LayerNumber).Last().RecognizedList.Add(submit);
-            //    }
-            //}
+                recognizeNetwork.Layers.First().Neurons.Add(new Neuron(sigma, submit, neuron.id));
+            }
+
+            foreach (var layer in network.Layers.OrderByDescending(x => x.LayerNumber).Where(x => x.Name != "Enter"))
+            {
+                recognizeNetwork.Layers.Add(new NetLayer());
+                foreach (var neuron in layer.Neurons)
+                {
+                    submit = new double[neuron.weight.GetLength(0), neuron.weight.GetLength(1)];
+                    sum = 0;
+                    sigma = 0;
+                    foreach (var recognizeLayer in recognizeNetwork.Layers)
+                    {
+                        foreach (var recognizeNeuron in recognizeLayer.Neurons)
+                        {
+                            if (IsLinkedLocal(recognizeNeuron.id, neuron.id))
+                            {
+                                for (int x = 0; x < neuron.weight.GetLength(0); x++)
+                                {
+                                    for (int y = 0; y < neuron.weight.GetLength(1); y++)
+                                    {
+                                        submit[x, y] += recognizeNeuron.weight[x, y]*recognizeNeuron.a;
+                                        sum += recognizeNeuron.weight[x, y]*recognizeNeuron.a;
+                                    }
+                                }
+                                
+                            }
+                            
+                        }
+                        
+                    }
+                    sigma = Neuron.sigmoida(sum - neuron.threshold);
+                    recognizeNetwork.Layers.Last().Neurons.Add(new Neuron(sigma, submit, neuron.id));
+                }
+            }
+            
+                
+                
+
+                //recognizeNetwork.Layers.OrderBy(x => x.LayerNumber).Last().RecognizedList.Add(submit);
+            
 
             //обход 1-го скрытого слоя
 
@@ -846,44 +896,26 @@ namespace Arkenstone
 
         private void button3_Click(object sender, EventArgs e)
         {
-            if (display1.SelectedShapes.Count > 0)
-            {
-                connect.Clear();
-                foreach (Shape s in display1.SelectedShapes)
-                {
-                    List<int> numList = new List<int>();
-                    var shi = s.GetConnectionInfos(ControlPointId.Any, null).ToList<ShapeConnectionInfo>();
-                    for (int i = 0; i < shi.Count; i++)
-                    {
-                        if (shi[i].OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data !=
-                            s.Data)
-                        {
-                            string data = shi[i].OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data;
-                            numList.Add(Convert.ToInt32(data));
-                        }
-                    }
-                    int[] num = numList.ToArray();
-                    visOut.Add(Operations.shapeDraw(display1, num));
-                    Operations.GetBinaryPic(Operations.shapeDraw(display1, num), input);
-                    output_layer.Add(new Neuron(input, count));
-                    connectOut.Add(num);
+            RecognizeLetter();
 
+            recognize_sigm_out = new List<double>();
 
-                }
-                listBox1.Items.Clear();
-                for (int i = 0; i < connectInp.Count; i++)
-                {
-                    listBox1.Items.Add(Convert.ToInt32(i + 1) + "-й коннект");
-                    for (int j = 0; j < connectInp[i].Count<int>(); j++)
-                    {
-                        listBox1.Items.Add(connectInp[i][j]);
-                    }
-                }
-            }
-            else
+            foreach (var neuron in recognizeNetwork.Layers.Last().Neurons)
             {
-                MessageBox.Show("Выберите нейроны");
+                recognize_sigm_out.Add(neuron.a);
             }
+
+            double max = recognize_sigm_out.Max();
+
+            int RECOGNIZED = 0;
+
+            for (int i = 0; i < recognizeNetwork.Layers.Last().Neurons.Count(); i++)
+            {
+                if (recognize_sigm_out[i] == max)
+                    RECOGNIZED = i;
+            }
+
+            MessageBox.Show("Программа думает, что на изображении буква " + alphabet[RECOGNIZED]);
         }
 
         private void display1_ShapesInserted(object sender, Dataweb.NShape.Controllers.DiagramPresenterShapesEventArgs e)
@@ -1038,7 +1070,7 @@ namespace Arkenstone
 
         private void button6_Click(object sender, EventArgs e)
         {
-            MessageBox.Show(IsLinked(Convert.ToInt32(textBox1.Text), Convert.ToInt32(textBox2.Text)) ? "Да" : "Нет");
+            MessageBox.Show(IsLinkedLocal(Convert.ToInt32(textBox1.Text), Convert.ToInt32(textBox2.Text)) ? "Да" : "Нет");
         }
     }
 }
