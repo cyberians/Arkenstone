@@ -59,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes\ActivationFunction.cs" />
+    <Compile Include="Classes\as.cs" />
     <Compile Include="Classes\NetLayer.cs" />
     <Compile Include="Classes\LearningAlgorithm.cs" />
     <Compile Include="Classes\Link.cs" />
