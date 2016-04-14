@@ -81,7 +81,42 @@ namespace Arkenstone
         Network network = new Network();
         Network recognizeNetwork;
 
+        /////////////---вывод на форму
+
+
+        public void to_form()
+        {
+            //foreach (var letter in alphabet)
+            //{
+            //    MessageBox.Show(letter.ToString());
+            //}
+            foreach (var layer in network.Layers)
+            {
+                foreach (var neuron in layer.Neurons)
+                {
+                    string test = "";
+                    for (var x = 0; x < 64; x++)
+                    {
+                        for (var y = 0; y < 64; y++)
+                        {
+                            test += neuron.weight[x, y] + " ";
+                        }
+                        test += "\n";
+                    }
+                    testForm f = new testForm();
+                    MessageBox.Show("НОМЕР НЕЙРОНА - " + neuron.id);
+                    f.richTextBox1.Text = test;
+                    f.ShowDialog();
+                }
+            }
+        }
+
+        /////////////
+
+
         /////////////--------НЕЙРОСЕТЕВЫЕ АЛГОРИТМЫ
+
+
 
         public void run_network_new()
         {
@@ -102,10 +137,11 @@ namespace Arkenstone
             {
                 foreach (var neuron in t.Neurons)
                 {
+                    neuron.weight = new double[64, 64];
                     double sum = 0;
                     //foreach (var link in links.Where(link => link.id_in == neuron.id))
                     //{
-                    //    foreach (var layer in network.Layers.Where(layer => layer.LayerNumber == t.LayerNumber + 1)) 
+                    //    foreach (var layer in network.Layers.Where(layer => layer.LayerNumber == t.LayerNumber + 1))
                     //    {
                     //        for (var x = 0; x < neuron.weight.GetLength(0); x++)
                     //        {
@@ -123,24 +159,37 @@ namespace Arkenstone
                     //        }
                     //    }
                     //}
-                    
-                        foreach (var input_neuron 
-                                    in from layer 
-                                    in network.Layers.Where(layer => layer.LayerNumber == t.LayerNumber + 1) 
-                                    from input_neuron 
-                                    in layer.Neurons 
-                                    where IsLinkedLocal(input_neuron.id, neuron.id)
-                                    select input_neuron)
+                    foreach (var nextLayer in network.Layers.Where(layer => layer.LayerNumber == t.LayerNumber + 1))
+                    {
+                        foreach (var input_neuron in nextLayer.Neurons)
                         {
-                            for (var x = 0; x < neuron.weight.GetLength(0); x++)
+                            
+                            if (IsLinkedLocal(input_neuron.id, neuron.id))
                             {
-                                for (var y = 0; y < neuron.weight.GetLength(1); y++)
+                                
+                                for (var x = 0; x < neuron.weight.GetLength(0); x++)
                                 {
-                                    sum = input_neuron.weight[x, y]*input_neuron.a;
-                                    neuron.weight[x, y] += input_neuron.weight[x, y]*input_neuron.a;
+                                    for (var y = 0; y < neuron.weight.GetLength(1); y++)
+                                    {
+                                        sum = input_neuron.weight[x, y] * input_neuron.a;
+                                        neuron.weight[x, y] += input_neuron.weight[x, y] * input_neuron.a;
+                                    }
                                 }
                             }
+                            
                         }
+                    }
+
+                        //foreach (var input_neuron 
+                        //            in from layer 
+                        //            in network.Layers.Where(layer => layer.LayerNumber == t.LayerNumber + 1) 
+                        //            from input_neuron 
+                        //            in layer.Neurons 
+                        //            where IsLinkedLocal(input_neuron.id, neuron.id)
+                        //            select input_neuron)
+                        //{
+                            
+                        //}
                     
                     neuron.a = Neuron.sigmoida(sum - neuron.threshold);
                 }
@@ -157,53 +206,123 @@ namespace Arkenstone
 
         public void calculate_hidden_layers_errors()
         {
-            foreach (var t in network.Layers)
+            foreach (var layer in network.Layers.Where(l => l.Name != "Output"))
             {
-                foreach (var neuron in t.Neurons)
+                foreach (var neuron in layer.Neurons)
                 {
-                    double sum = 0.0;
-                    foreach (var link in links.Where(link => link.id_out == neuron.id))
+                    double sum = 0;
+                    foreach (var outputLayer in network.Layers.Where(l => l.LayerNumber == layer.LayerNumber - 1))
                     {
-                        foreach (var layer in network.Layers.Where(layer => layer.LayerNumber == t.LayerNumber - 1))
+                        foreach (var outNeuron in outputLayer.Neurons)
                         {
-                            for (var x = 0; x < neuron.weight.GetLength(0); x++)
+                            if (IsLinkedLocal(neuron.id, outNeuron.id))
                             {
-                                for (var y = 0; y < neuron.weight.GetLength(1); y++)
+                                for (var x = 0; x < neuron.weight.GetLength(0); x++)
                                 {
-                                    sum += layer.Neurons.Where(output_neuron => link.id_in == output_neuron.id).Sum(output_neuron => output_neuron.error*neuron.weight[x, y]);
+                                    for (var y = 0; y < neuron.weight.GetLength(1); y++)
+                                    {
+                                        sum += outNeuron.error*neuron.weight[x, y];
+                                    }
                                 }
                             }
-                            //MessageBox.Show("Сейчас обрабатываются слои:\n\n" + t.Name + " и " + layer.Name);
                         }
-                        //MessageBox.Show("Текущий линк: " + link.id_out + " - " + link.id_in);
                     }
-                    if(sum > 0)
-                        neuron.error = neuron.a*(1.0 - neuron.a)*sum;
-                    //MessageBox.Show("НЕейроны");
+                    neuron.error = neuron.a*(1.0 - neuron.a)*sum;
                 }
-                //MessageBox.Show("Дошел до сюда. слой - "+t.Name);
             }
+
+            //foreach (var t in network.Layers)
+            //{
+            //    foreach (var neuron in t.Neurons)
+            //    {
+            //        double sum = 0.0;
+            //        foreach (var link in links.Where(link => link.id_out == neuron.id))
+            //        {
+            //            foreach (var layer in network.Layers.Where(layer => layer.LayerNumber == t.LayerNumber - 1))
+            //            {
+            //                for (var x = 0; x < neuron.weight.GetLength(0); x++)
+            //                {
+            //                    for (var y = 0; y < neuron.weight.GetLength(1); y++)
+            //                    {
+            //                        sum += layer.Neurons.Where(output_neuron => link.id_in == output_neuron.id).Sum(output_neuron => output_neuron.error*neuron.weight[x, y]);
+            //                    }
+            //                }
+            //                //MessageBox.Show("Сейчас обрабатываются слои:\n\n" + t.Name + " и " + layer.Name);
+            //            }
+            //            //MessageBox.Show("Текущий линк: " + link.id_out + " - " + link.id_in);
+            //        }
+            //        if(sum > 0)
+            //            neuron.error = neuron.a*(1.0 - neuron.a)*sum;
+            //        //MessageBox.Show("НЕейроны");
+            //    }
+            //    //MessageBox.Show("Дошел до сюда. слой - "+t.Name);
+            //}
         }
 
-        public void update_hidden_weights()
+
+        public void update_output_weights()
         {
             foreach (var outNeuron in network.Layers[0].Neurons)
             {
-                foreach (var hidNeuron in network.Layers[network.Layers.Count - 1].Neurons)
+                if (limit_out - outNeuron.a > 0.01)
                 {
-                    if (IsLinkedLocal(hidNeuron.id, outNeuron.id))
+                    foreach (var hidNeuron in network.Layers[1].Neurons)
                     {
-                        for (int x = 0; x < outNeuron.weight.GetLength(0); x++)
+                        if (IsLinkedLocal(hidNeuron.id, outNeuron.id))
                         {
-                            for (int y = 0; y < outNeuron.weight.GetLength(1); y++)
+                            for (int x = 0; x < outNeuron.weight.GetLength(0); x++)
                             {
-                                outNeuron.weight[x, y] = hidNeuron.weight[x, y] + speed * outNeuron.error * hidNeuron.a;
+                                for (int y = 0; y < outNeuron.weight.GetLength(1); y++)
+                                {
+                                    if (outNeuron.weight[x, y] > 0)
+                                        outNeuron.weight[x, y] += hidNeuron.weight[x, y] + speed * outNeuron.error * hidNeuron.a;
+                                }
                             }
+                            
                         }
-                        outNeuron.threshold = outNeuron.threshold - speed * outNeuron.error;
+                    }
+                    outNeuron.threshold = outNeuron.threshold - speed * outNeuron.error;
+                }
+
+            }
+        }
+        public void update_hidden_weights()
+        {
+            foreach (var outNeuron in network.Layers.First(layer => layer.Name == "Output").Neurons)
+            {
+                if (limit_out - outNeuron.a > 0.01)
+                {
+                    foreach (var layer in network.Layers.Where(layer => layer.Name != "Output"))
+                    {
+                        foreach (var neuron in layer.Neurons)
+                        {
+                            foreach (var prevLayer in network.Layers.Where(x => x.LayerNumber - 1 == layer.LayerNumber))
+                            {
+                                foreach (var prevNeuron in prevLayer.Neurons)
+                                {
+                                    if (IsLinkedGlobal(prevNeuron.id, neuron.id) && IsLinkedGlobal(prevNeuron.id, outNeuron.id))
+                                    {
+                                        for (var x = 0; x < neuron.weight.GetLength(0); x++)
+                                        {
+                                            for (var y = 0; y < neuron.weight.GetLength(1); y++)
+                                            {
+                                                if (neuron.weight[x, y] > 0)
+                                                    neuron.weight[x, y] += prevNeuron.weight[x, y] + speed * neuron.error * prevNeuron.a;
+                                            }
+                                        }
+                                        
+                                    }
+                                }
+                            }
+                            neuron.threshold = neuron.threshold - speed * neuron.error;
+
+                        }
+
                     }
                 }
+                
             }
+            
 
             //foreach (var neuron in network.Layers[network.Layers.Count-1].Neurons)
             //{
@@ -727,8 +846,8 @@ namespace Arkenstone
             pictureBox1.Image = Image.FromFile(openFileDialog1.FileName);
             bm1 = (pictureBox1.Image as Bitmap);
             bm1 = new Bitmap(bm1, new Size(64, 64));
-            enter = new double[64, 64];
-            Operations.GetBinaryPic(bm1, enter);
+            //enter = new double[64, 64];
+            enter = Operations.GetBinaryPic(bm1, enter);
 
             inputList.Clear();
             input_signal.Add(enter);
@@ -837,8 +956,11 @@ namespace Arkenstone
 
                     calculate_output_layer_errors_new();
                     calculate_hidden_layers_errors();
+
+                    update_output_weights();
                     update_hidden_weights();
 
+                    //to_form();
                 }
 
             }
@@ -989,7 +1111,7 @@ namespace Arkenstone
 
         private void button5_Click(object sender, EventArgs e)
         {
-
+            to_form();
             //run_network_new();
             //calculate_output_layer_errors_new();
             //calculate_hidden_layers_errors();
@@ -1015,7 +1137,7 @@ namespace Arkenstone
             //        tf.ShowDialog();
             //    }
             //}
-            update_hidden_weights();
+            //update_hidden_weights();
         }
 
         private void button6_Click(object sender, EventArgs e)
