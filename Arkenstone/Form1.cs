@@ -120,80 +120,66 @@ namespace Arkenstone
 
         public void run_network_new()
         {
-            foreach (var input_neuron in network.Layers[network.Layers.Count-1].Neurons)
+            //первый скрытый слой
+            foreach (var outNeuron in network.Layers[0].Neurons)
             {
-                double sum = 0;
-                for (var x = 0; x < 64; x++)
+                if (limit_out - outNeuron.a > 0)
                 {
-                    for (var y = 0; y < 64; y++)
+                    foreach (var input_neuron in network.Layers[network.Layers.Count - 1].Neurons)
                     {
-                        sum += input_neuron.weight[x, y];
+                        if (IsLinkedGlobal(input_neuron.id, outNeuron.id))
+                        {
+                            double sum = 0;
+                            for (var x = 0; x < input_neuron.weight.GetLength(0); x++)
+                            {
+                                for (var y = 0; y < input_neuron.weight.GetLength(1); y++)
+                                {
+                                    sum += input_neuron.weight[x, y];
+                                }
+                            }
+                            input_neuron.a = Neuron.sigmoida(sum - input_neuron.threshold);
+                        }
                     }
                 }
-                input_neuron.a = Neuron.sigmoida(sum - input_neuron.threshold);
             }
 
-            foreach (var t in network.Layers.OrderByDescending(x => x.LayerNumber).Where(t => t.Name != "Enter"))
+            foreach (var outNeuron in network.Layers[0].Neurons)
             {
-                foreach (var neuron in t.Neurons)
+                if (limit_out - outNeuron.a > 0)
                 {
-                    neuron.weight = new double[64, 64];
-                    double sum = 0;
-                    //foreach (var link in links.Where(link => link.id_in == neuron.id))
-                    //{
-                    //    foreach (var layer in network.Layers.Where(layer => layer.LayerNumber == t.LayerNumber + 1))
-                    //    {
-                    //        for (var x = 0; x < neuron.weight.GetLength(0); x++)
-                    //        {
-                    //            for (var y = 0; y < neuron.weight.GetLength(1); y++)
-                    //            {
-
-                    //                foreach (var input_neuron in layer.Neurons.Where(input_neuron => link.id_out == input_neuron.id))
-                    //                {
-                    //                    sum = input_neuron.weight[x, y] * input_neuron.a;
-                    //                    neuron.weight[x, y] += input_neuron.weight[x, y] * input_neuron.a;
-                    //                }
-
-
-                    //            }
-                    //        }
-                    //    }
-                    //}
-                    foreach (var nextLayer in network.Layers.Where(layer => layer.LayerNumber == t.LayerNumber + 1))
+                    foreach (var hidLayer in network.Layers.OrderByDescending(layer => layer.LayerNumber).Where(layer => layer.Name != "Enter"))
                     {
-                        foreach (var input_neuron in nextLayer.Neurons)
+                        foreach (var hidNeuron in hidLayer.Neurons)
                         {
-                            
-                            if (IsLinkedLocal(input_neuron.id, neuron.id))
+                            hidNeuron.weight = new double[64, 64];
+                            double sum = 0;
+
+                            foreach (var prevLayer in network.Layers.Where(layer => layer.LayerNumber == hidLayer.LayerNumber + 1))
                             {
-                                
-                                for (var x = 0; x < neuron.weight.GetLength(0); x++)
+                                foreach (var input_neuron in nextLayer.Neurons)
                                 {
-                                    for (var y = 0; y < neuron.weight.GetLength(1); y++)
+
+                                    if (IsLinkedLocal(input_neuron.id, hidNeuron.id))
                                     {
-                                        sum = input_neuron.weight[x, y] * input_neuron.a;
-                                        neuron.weight[x, y] += input_neuron.weight[x, y] * input_neuron.a;
+
+                                        for (var x = 0; x < hidNeuron.weight.GetLength(0); x++)
+                                        {
+                                            for (var y = 0; y < hidNeuron.weight.GetLength(1); y++)
+                                            {
+                                                sum = input_neuron.weight[x, y] * input_neuron.a;
+                                                hidNeuron.weight[x, y] += input_neuron.weight[x, y] * input_neuron.a;
+                                            }
+                                        }
                                     }
                                 }
                             }
-                            
+                            hidNeuron.a = Neuron.sigmoida(sum - hidNeuron.threshold);
                         }
                     }
-
-                        //foreach (var input_neuron 
-                        //            in from layer 
-                        //            in network.Layers.Where(layer => layer.LayerNumber == t.LayerNumber + 1) 
-                        //            from input_neuron 
-                        //            in layer.Neurons 
-                        //            where IsLinkedLocal(input_neuron.id, neuron.id)
-                        //            select input_neuron)
-                        //{
-                            
-                        //}
-                    
-                    neuron.a = Neuron.sigmoida(sum - neuron.threshold);
                 }
-            }
+            
+                }
+                
 
         }
 
@@ -288,82 +274,77 @@ namespace Arkenstone
         }
         public void update_hidden_weights()
         {
-            foreach (var outNeuron in network.Layers.First(layer => layer.Name == "Output").Neurons)
-            {
-                if (limit_out - outNeuron.a > 0.01)
+            //foreach (var lay in network.Layers.Where(l => l.Name == "Output"))
+            //{
+                foreach (var outNeuron in network.Layers[0].Neurons)//lay.Neurons)
                 {
-                    foreach (var layer in network.Layers.Where(layer => layer.Name != "Output"))
+                    if (limit_out - outNeuron.a > 0.01)
                     {
-                        foreach (var neuron in layer.Neurons)
-                        {
-                            foreach (var prevLayer in network.Layers.Where(x => x.LayerNumber - 1 == layer.LayerNumber))
+                        //foreach (var layer in network.Layers.Where(layer => layer.Name != "Output"))
+                        //{
+                            foreach (var neuron in network.Layers[1].Neurons)//layer.Neurons)
                             {
-                                foreach (var prevNeuron in prevLayer.Neurons)
-                                {
-                                    if (IsLinkedGlobal(prevNeuron.id, neuron.id) && IsLinkedGlobal(prevNeuron.id, outNeuron.id))
+                                //foreach (var prevLayer in network.Layers.Where(x => x.LayerNumber - 1 == layer.LayerNumber))
+                                //{
+                                    foreach (var prevNeuron in network.Layers[2].Neurons)//prevLayer.Neurons)
                                     {
-                                        for (var x = 0; x < neuron.weight.GetLength(0); x++)
+                                        if (IsLinkedLocal(prevNeuron.id, neuron.id) && IsLinkedGlobal(prevNeuron.id, outNeuron.id))
                                         {
-                                            for (var y = 0; y < neuron.weight.GetLength(1); y++)
+                                            for (var x = 0; x < neuron.weight.GetLength(0); x++)
                                             {
-                                                if (neuron.weight[x, y] > 0)
-                                                    neuron.weight[x, y] += prevNeuron.weight[x, y] + speed * neuron.error * prevNeuron.a;
+                                                for (var y = 0; y < neuron.weight.GetLength(1); y++)
+                                                {
+                                                    if (neuron.weight[x, y] > 0)
+                                                        neuron.weight[x, y] += prevNeuron.weight[x, y] + speed * neuron.error * prevNeuron.a;
+                                                }
                                             }
+
                                         }
-                                        
                                     }
+                                //}
+                                neuron.threshold = neuron.threshold - speed * neuron.error;
+
+                            }
+
+                        //}
+                    }
+
+                }
+           // }
+        }
+
+        public void update_FIRST_hidden_layer_weights()
+        {
+            //foreach (var outputLayer in network.Layers.Where(l => l.Name == "Output"))
+            //{
+                foreach (var outNeuron in network.Layers[0].Neurons)//outputLayer.Neurons)
+                {
+                    if (limit_out - outNeuron.a > 0.01)
+                    {
+                        //foreach (var firstLayer in network.Layers.Where(l => l.Name == "Enter"))
+                        //{
+                            foreach (var inputNeuron in network.Layers[2].Neurons)//firstLayer.Neurons)
+                            {
+                                if (IsLinkedGlobal(inputNeuron.id, outNeuron.id))
+                                {
+                                    for (var x = 0; x < inputNeuron.weight.GetLength(0); x++)
+                                    {
+                                        for (var y = 0; y < inputNeuron.weight.GetLength(1); y++)
+                                        {
+                                            if (inputNeuron.weight[x, y] > 0)
+                                                inputNeuron.weight[x, y] = inputNeuron.weight[x, y] + speed * inputNeuron.error;
+                                        }
+                                    }
+                                    inputNeuron.threshold = inputNeuron.threshold - speed * inputNeuron.error;
                                 }
                             }
-                            neuron.threshold = neuron.threshold - speed * neuron.error;
-
-                        }
-
+                        //}
                     }
+                    
                 }
-                
-            }
-            
-
-            //foreach (var neuron in network.Layers[network.Layers.Count-1].Neurons)
-            //{
-            //    foreach (var outNeuron in network.Layers[0].Neurons)
-            //    {
-            //        if (IsLinkedGlobal(neuron.id, outNeuron.id))
-            //        {
-            //            for (int x = 0; x < neuron.weight.GetLength(0); x++)
-            //            {
-            //                for (int y = 0; y < neuron.weight.GetLength(1); y++)
-            //                {
-            //                    neuron.weight[x, y] = neuron.weight[x, y] + speed * neuron.error;
-            //                }
-            //            }
-            //            neuron.threshold = neuron.threshold - speed * neuron.error;
-            //        }
-            //    }
-            //}
-
-            //foreach (var layer in network.Layers.OrderByDescending(x => x.LayerNumber).Where(layer => layer.Name != "Enter"))
-            //{
-            //    foreach (var neuron in layer.Neurons)
-            //    {
-            //        foreach (var prevNeuron in network.Layers.First(x => x.LayerNumber - 1 == layer.LayerNumber).Neurons)
-            //        {
-            //            if (IsLinkedGlobal(prevNeuron.id, neuron.id))
-            //            {
-            //                for (int x = 0; x < neuron.weight.GetLength(0); x++)
-            //                {
-            //                    for (int y = 0; y < neuron.weight.GetLength(1); y++)
-            //                    {
-            //                        neuron.weight[x, y] = prevNeuron.weight[x, y] + speed*neuron.error*prevNeuron.a;
-            //                    }
-            //                }
-            //                neuron.threshold = neuron.threshold - speed*neuron.error;
-            //            }
-            //        }
-            //    }
-               
-            //}
+           // }
         }
+
         public bool IsLinkedGlobal(int firstNeuron, int lastNeuron)
         {
             int first = firstNeuron;
@@ -959,7 +940,7 @@ namespace Arkenstone
 
                     update_output_weights();
                     update_hidden_weights();
-
+                    update_FIRST_hidden_layer_weights();
                     //to_form();
                 }
 
