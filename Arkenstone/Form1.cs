@@ -57,14 +57,296 @@ namespace Arkenstone
         List<Bitmap> visGrPriznak = new List<Bitmap>();
         List<Bitmap> visOut = new List<Bitmap>();
 
-        List<int[]> connect = new List<int[]>();
-        List<int[]> connectOut = new List<int[]>();
-        List<int[]> connectInp = new List<int[]>();
         List<int> inputList = new List<int>();
 
         List<Link> layer1_connect = new List<Link>();
         List<Link> layer2_connect = new List<Link>();
         List<Link> layer3_connect = new List<Link>();
+
+        List<int[]> connectOut = new List<int[]>()
+        {
+            new int[] {1,2},
+            new int[] {3,4,5},
+            new int[] {6,7,8},
+            new int[] {9,10},
+            new int[] {11,12},
+            new int[] {13,14,15},
+            new int[] {16,17,18},
+            new int[] {19,20,21},
+            new int[] {22,23},
+            new int[] {24,25,26},
+            new int[] {27,28},
+            new int[] {29,30},
+            new int[] {31,32},
+            new int[] {33,34},
+            new int[] {35,36},
+            new int[] {37,38},
+            new int[] {39,40,41},
+            new int[] {42,43,44},
+            new int[] {45,46},
+            new int[] {47,48},
+            new int[] {49,50},
+            new int[] {51,52},
+            new int[] {53,54},
+            new int[] {55,56},
+            new int[] {57,58,59},
+            new int[] {60,61,62},
+            new int[] {63,64},
+            new int[] {65,66,67},
+            new int[] {68,69},
+            new int[] {70,71,72},
+            new int[] {73,74,75},
+            new int[] {76,77,78},
+            new int[] {79,80},
+            new int[] {81,82,83},
+            new int[] {84,85,86},
+            new int[] {87,88},
+            new int[] {89,90},
+            new int[] {91,92},
+            new int[] {93,94,95},
+            new int[] {96},
+            new int[] {97,98},
+            new int[] {99,100,101},
+            new int[] {102,103,104},
+            new int[] {105,106},
+            new int[] {107,108},
+            new int[] {109},
+            new int[] {110,111},
+            new int[] {112,113},
+            new int[] {114,115},
+            new int[] {116,117},
+            new int[] {118},
+            new int[] {119,120},
+            new int[] {121,122},
+            new int[] {123,124,125},
+            new int[] {126,127},
+            new int[] {128},
+            new int[] {129,130},
+            new int[] {131,132},
+            new int[] {133,134},
+            new int[] {135,136},
+            new int[] {137,138},
+            new int[] {139},
+            new int[] {140,141},
+            new int[] {142,143}
+        };
+        List<int[]> connect = new List<int[]>()
+        {
+            new int[] {1,2,3},
+            new int[] {4,5},
+            new int[] {6,7},
+            new int[] {8,9},
+            new int[] {10,11},
+            new int[] {12,13},
+            new int[] {14,15},
+            new int[] {16,17},
+            new int[] {18,19},
+            new int[] {20},
+            new int[] {21,22},
+            new int[] {23,24},
+            new int[] {25,26},
+            new int[] {27,28},
+            new int[] {29,30},
+            new int[] {31,32},
+            new int[] {33,34},
+            new int[] {35},
+            new int[] {36,37},
+            new int[] {38},
+            new int[] {39,40},
+            new int[] {41,42},
+            new int[] {43,44},
+            new int[] {45},
+            new int[] {46,47},
+            new int[] {48,49},
+            new int[] {50,51},
+            new int[] {52,53,54},
+            new int[] {55,56},
+            new int[] {57,58},
+            new int[] {59,60},
+            new int[] {61,62,63},
+            new int[] {64,65,66},
+            new int[] {67,68,69},
+            new int[] {70,71},
+            new int[] {72,73},
+            new int[] {74,75},
+            new int[] {76,77},
+            new int[] {78,79},
+            new int[] {80,81},
+            new int[] {82},
+            new int[] {83,84},
+            new int[] {85,86},
+            new int[] {87,88},
+            new int[] {89,90,91},
+            new int[] {92},
+            new int[] {93,94},
+            new int[] {95,96},
+            new int[] {97,98,99},
+            new int[] {100,101,102},
+            new int[] {103,104,105},
+            new int[] {106,107},
+            new int[] {108,109},
+            new int[] {110,111},
+            new int[] {112,113},
+            new int[] {114,115,116},
+            new int[] {117,118},
+            new int[] {119,120},
+            new int[] {121,122},
+            new int[] {123,124},
+            new int[] {125,126},
+            new int[] {127,128},
+            new int[] {129,130,131},
+            new int[] {132,133},
+            new int[] {134,135,136},
+            new int[] {137,138},
+            new int[] {139,140},
+            new int[] {141,142,143},
+            new int[] {144,145},
+            new int[] {146,147},
+            new int[] {148},
+            new int[] {149,150},
+            new int[] {151,152,153},
+            new int[] {154,155},
+            new int[] {156,157},
+            new int[] {158,159},
+            new int[] {160,161},
+            new int[] {162,163},
+            new int[] {164,165},
+            new int[] {166,167,168},
+            new int[] {169},
+            new int[] {170,171},
+            new int[] {172,173},
+            new int[] {174,175},
+            new int[] {176,177},
+            new int[] {178,179},
+            new int[] {180,181},
+            new int[] {182},
+            new int[] {183,184},
+            new int[] {185,186},
+            new int[] {187,188},
+            new int[] {189,190},
+            new int[] {191},
+            new int[] {192,193},
+            new int[] {194,195},
+            new int[] {196,197,198},
+            new int[] {199,200},
+            new int[] {201,202},
+            new int[] {203,204},
+            new int[] {205,206},
+            new int[] {207},
+            new int[] {208,209},
+            new int[] {210,211},
+            new int[] {212},
+            new int[] {213,214},
+            new int[] {215,216},
+            new int[] {217,218,219},
+            new int[] {220,221},
+            new int[] {222,223},
+            new int[] {224,225},
+            new int[] {226,227},
+            new int[] {228,229},
+            new int[] {230,231},
+            new int[] {232,233},
+            new int[] {234,235},
+            new int[] {236,237},
+            new int[] {238,239},
+            new int[] {240,241},
+            new int[] {242,243},
+            new int[] {244,245},
+            new int[] {246,247},
+            new int[] {248,249},
+            new int[] {250,251},
+            new int[] {252},
+            new int[] {253,254},
+            new int[] {255,256},
+            new int[] {257,258},
+            new int[] {259,260},
+            new int[] {261,262,263},
+            new int[] {264,265,266},
+            new int[] {267,268,269},
+            new int[] {270,271,272},
+            new int[] {273,274},
+            new int[] {275,276},
+            new int[] {277,278},
+            new int[] {279,280},
+            new int[] {281,282},
+            new int[] {283},
+            new int[] {284,285,286},
+            new int[] {287,288},
+            new int[] {289,290,291},
+            new int[] {292},
+            new int[] {293,294}
+
+        };
+
+        List<int[]> connectInp = new List<int[]>()
+        {
+            new int[] { 1,2,3,4,5 },
+            new int[] {6,7,8,9,10,11},
+            new int[] {12,13,14,15,16,17},
+            new int[] {18,19,20},
+            new int[] {21,22,23,24},
+            new int[] {25,26,27,28,29,30},
+            new int[] {31,32,33,34,35},
+            new int[] {36,37,38,39,40},
+            new int[] {41,42,43,44},
+            new int[] {45,46,47,48,49},
+            new int[] {50,51,52,53,54},
+            new int[] {55,56,57,58},
+            new int[] {59,60,61,62,63},
+            new int[] {64,65,66,67,68,69},
+            new int[] {70,71,72,73},
+            new int[] {74,75,76,77},
+            new int[] {78,79,80,81,82},
+            new int[] {83,84,85,86,87,88},
+            new int[] {89,90,91,92},
+            new int[] {93,94,95,96},
+            new int[] {97,98,99,100,101,102},
+            new int[] {103,104,105,106,107},
+            new int[] {108,109,110,111},
+            new int[] {112,113,114,115,116},
+            new int[] {117,118,119,120,121,122},
+            new int[] {123,124,125,126,127,128},
+            new int[] {129,130,131,132,133},
+            new int[] {134,135,136,137,138,139,140},
+            new int[] {141,142,143,144,145},
+            new int[] {146,147,148,149,150},
+            new int[] {151,152,153,154,155,156,157},
+            new int[] {158,159,160,161,162,163},
+            new int[] {164,165,166,167,168},
+            new int[] {169,170,171,172,173},
+            new int[] {174,175,176,177,178,179},
+            new int[] {180,181,182},
+            new int[] {183,184,185,186},
+            new int[] {187,188,189,190},
+            new int[] {191,192,193,194,195},
+            new int[] {196,197,198},
+            new int[] {199,200,201,202},
+            new int[] {203,204,205,206,207},
+            new int[] {208,209,210,211,212},
+            new int[] {213,214,215,216},
+            new int[] {217,218,219,220,221},
+            new int[] {222,223},
+            new int[] {224,225,226,227},
+            new int[] {228,229,230,231},
+            new int[] {232,233,234,235},
+            new int[] {236,237,238,239},
+            new int[] {240,241},
+            new int[] {242,243,244,245},
+            new int[] {246,247,248,249},
+            new int[] {250,251,252,253,254},
+            new int[] {255,256,257,258},
+            new int[] {259,260},
+            new int[] {261,262,263,264,265,266},
+            new int[] {267,268,269,270,271,272},
+            new int[] {273,274,275,276},
+            new int[] {277,278,279,280},
+            new int[] {281,282,283},
+            new int[] {284,285,286},
+            new int[] {287,288,289,290,291},
+            new int[] {292,293,294}
+        };
+
+        List<Point> coordinate = new List<Point>();
 
         int countgr2 = 0;
         int count = 1;
@@ -537,6 +819,29 @@ namespace Arkenstone
             {
                 alphabet.Add(arr[j]);
             }
+
+            var coord = new Point();
+
+            var coord1 = System.IO.File.ReadAllLines(@"coordinateBig.txt");
+            for (int i = 0; i < coord1.Length; i += 2)
+            {
+                coord.X = Convert.ToInt32(coord1[i]);
+                coord.Y = Convert.ToInt32(coord1[i + 1]);
+                coordinate.Add(coord);
+            }
+
+            var coord2 = System.IO.File.ReadAllLines(@"coordinateSmall.txt");
+            
+            for (int i = 0; i < coord2.Length; i += 2)
+            {
+                coord.X = Convert.ToInt32(coord2[i]);
+                coord.Y = Convert.ToInt32(coord2[i + 1]);
+                coordinate.Add(coord);
+            }
+            
+            
+
+
             project1.AutoLoadLibraries = true;
             project1.LibrarySearchPaths.Add(Application.StartupPath);
             project1.AddLibraryByName("Dataweb.NShape.GeneralShapes", false);
@@ -625,7 +930,7 @@ namespace Arkenstone
             //inputList.Add(Convert.ToInt32(box.Data));
         }
 
-        public Point StartPoint(Shape boxShape)
+        private Point StartPoint(Shape boxShape)
         {
             var point  = new Point();
 
@@ -716,6 +1021,11 @@ namespace Arkenstone
             //{ return teacher1.Name.CompareTo(teacher2.Name); });  
             //recognizeNetwork.Layers[recognizeNetwork.Layers.Count-1].Neurons.Sort(
             //    (neuron1, neuron2) => neuron1.id.CompareTo(neuron2.id));
+
+            recognizeNetwork.Layers[recognizeNetwork.Layers.Count - 1].Neurons =
+                recognizeNetwork.Layers[recognizeNetwork.Layers.Count - 1].Neurons.OrderBy(o => o.id).ToList();
+
+            //List<Order> SortedList = objListOrder.OrderBy(o => o.OrderDate).ToList();
 
             foreach (var neuron in recognizeNetwork.Layers.Last().Neurons)
             {
@@ -894,6 +1204,101 @@ namespace Arkenstone
         private void button6_Click(object sender, EventArgs e)
         {
             MessageBox.Show(IsLinkedLocal(Convert.ToInt32(textBox1.Text), Convert.ToInt32(textBox2.Text)) ? "Да" : "Нет");
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            var loadedImages = new List<Image>();
+
+            var dr = openFileDialog2.ShowDialog();
+            if (dr == DialogResult.OK)
+            {
+                foreach (var file in openFileDialog2.FileNames)
+                {
+                    loadedImages.Add(Image.FromFile(file));
+                    
+                }
+            }
+
+            
+            
+            CreateFirstHiddenLayer(loadedImages);
+        }
+
+        private void InsertNeuron()
+        {
+            
+        }
+
+        private Point HiddenPoint(Shape boxShape)
+        {
+            var point = new Point();
+
+            if (diagram.Shapes.Count == 0)
+            {
+                point.X = 250;
+                point.Y = 250;
+            }
+            else
+            {
+                point.X = diagram.Shapes.First().X;
+                point.Y = diagram.Shapes.First().Y + 60;
+            }
+
+
+            return point;
+        }
+        private void CreateFirstHiddenLayer(List<Image> images)
+        {
+            
+            var countCoor = 0;
+            for (int i = 0; i < images.Count; i++)
+            {
+                Bitmap autobm = new Bitmap(images[i], new Size(64, 64));
+
+                for (int j = 0; j < connectInp[i].Length; j++)
+                {
+                    Bitmap sign = new Bitmap(64, 64);
+                    Bitmap neuron = new Bitmap(64, 64);
+
+                    Point p = coordinate[countCoor];
+                    countCoor++;
+
+                    sign = autobm.Clone(new RectangleF(p.X - 10, p.Y - 8, 20, 16), autobm.PixelFormat);
+                    Graphics g = Graphics.FromImage(neuron);
+                    g.Clear(Color.White);
+                    g.DrawImage(sign, p.X - 10, p.Y - 8);
+
+
+
+                    Picture box = (Picture)project1.ShapeTypes["Picture"].CreateInstance();
+                    box.Image = new NamedImage { Image = neuron };
+
+                    box.FillStyle = project1.Design.FillStyles.Transparent;
+                    box.Data = count.ToString();
+                    //box.Text = box.Data;
+                    box.X = StartPoint(box).X;
+                    box.Y = StartPoint(box).Y;
+                    diagram.Shapes.Add(box);
+                    cachedRepository1.Insert((Shape)box, diagram);
+
+                    count++;
+
+                    //for (int k = 0; k < connect.Count; k++)
+                    //{
+                    //    if (connect[k][connect[k].Length - 1] == connectInp[i][j])
+                    //    {
+
+
+
+
+                    //    }
+
+                    //}
+                }
+
+                
+            }
         }
     }
 }
