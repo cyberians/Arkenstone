@@ -96,17 +96,17 @@ namespace Arkenstone.Classes
             using (var g = Graphics.FromImage(bm))
                 g.Clear(Color.White);
 
-            for (int x = 0; x < bm.Width; x++)
+            for (int i = 0; i < shi.Count; i++)
             {
-                for (int y = 0; y < bm.Height; y++)
+                for (int x = 0; x < bm.Width; x++)
                 {
-                    for (int i = 0; i < shi.Count; i++)
+                    for (int y = 0; y < bm.Height; y++)
                     {
                         Picture picture = shi[i].OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape as Picture;
                         NamedImage img = new NamedImage();
                         img = picture.Image;
 
-                        Bitmap bitmap = (Bitmap)img.Image;
+                        Bitmap bitmap = (Bitmap) img.Image;
 
                         Color mypixel = bitmap.GetPixel(x, y);
                         int col = 200;
@@ -187,6 +187,55 @@ namespace Arkenstone.Classes
             }
 
 
+        }
+
+
+        public static void ConnectShapesAutomatically(Display display1, Shape first_vertex, ref Shape last_vertex, Project project1, Diagram diagram, CachedRepository cachedRepository1, Polyline arrow)
+        {
+            var new_p = (Picture)project1.ShapeTypes["Picture"].CreateInstance();
+
+            var b = last_vertex as Box;
+
+            if (b != null)
+            {
+                var img = new NamedImage { Image = newDraw(last_vertex) };
+                new_p.Image = img;
+                new_p.FillStyle = project1.Design.FillStyles.Transparent;
+
+                new_p.Data = b.Data;
+                //new_p.Text = new_p.Data;
+
+                new_p.Height = b.Height;
+                new_p.Width = b.Width;
+
+                new_p.X = b.X;
+                new_p.Y = b.Y;
+
+                diagram.Shapes.Add(new_p);
+                cachedRepository1.Insert((Shape)new_p, diagram);
+
+                diagram.Shapes.Remove(b);
+
+                last_vertex = new_p;
+
+                arrow.Disconnect(ControlPointId.FirstVertex);
+                arrow.Disconnect(ControlPointId.LastVertex);
+
+                arrow.Connect(ControlPointId.FirstVertex, first_vertex, ControlPointId.Reference);
+                arrow.Connect(ControlPointId.LastVertex, new_p, ControlPointId.Reference);
+
+                
+            }
+
+            if (b == null && last_vertex.Type.Name == "Picture")
+            {
+                var img = new NamedImage { Image = newDraw(last_vertex) };
+
+                var picture = last_vertex as Picture;
+
+                picture.Image = img;
+                picture.FillStyle = project1.Design.FillStyles.Transparent;
+            }
         }
 
         public static void Connect_shapes_box(Display display1, Shape first_vertex, Shape last_vertex, Project project1, Diagram diagram, CachedRepository cachedRepository1, RepositoryShapeConnectionEventArgs e)

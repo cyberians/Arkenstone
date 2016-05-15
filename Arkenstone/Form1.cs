@@ -4,9 +4,11 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Dataweb.NShape;
@@ -62,6 +64,8 @@ namespace Arkenstone
         List<Link> layer1_connect = new List<Link>();
         List<Link> layer2_connect = new List<Link>();
         List<Link> layer3_connect = new List<Link>();
+
+        
 
         List<int[]> connectOut = new List<int[]>()
         {
@@ -346,7 +350,17 @@ namespace Arkenstone
             new int[] {292,293,294}
         };
 
+        private void Wait(int value)
+        {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            while (sw.ElapsedMilliseconds < value)
+                Application.DoEvents();
+        }
+
         List<Point> coordinate = new List<Point>();
+        List<Shape> firstLayerNeurons = new List<Shape>();
+        List<Shape> hiddenLayerNeurons = new List<Shape>(); 
 
         int countgr2 = 0;
         int count = 1;
@@ -364,8 +378,30 @@ namespace Arkenstone
         Network recognizeNetwork;
 
         /////////////---вывод на форму
+        public static int alpha_count = 1;
 
+        public static void to_notepad(double [,] massive, int alphacount)
+        {
+            string app_path = Application.StartupPath;
+            string path = "words";
+            string word_file = Path.Combine(Application.StartupPath, path, "word-" + alphacount) + ".txt";
+            string test = "";
+            for (int i = 0; i < 64; i++)
+            {
+                for (int j = 0; j < 64; j++)
+                {
+                    
+                    
+                    test += massive[i, j].ToString() + Environment.NewLine;
 
+                    //string createText = "Hello and Welcome" + Environment.NewLine;
+                    //
+                }
+            }
+            File.WriteAllText(word_file, test + Environment.NewLine);
+            
+            
+        }
         public void to_form(double [,] massive)
         {
             string test = "";
@@ -438,35 +474,24 @@ namespace Arkenstone
                     foreach (var hidLayer in network.Layers.OrderByDescending(layer => layer.LayerNumber).Where(layer => layer.Name != "Enter"))
                     {
                         //MessageBox.Show(hidLayer.Name);
-                        foreach (var hidNeuron in hidLayer.Neurons)
+                        foreach (var hidNeuron in hidLayer.Neurons.Where(hidNeuron => IsLinkedLocal(hidNeuron.id, outNeuron.id)))
                         {
-                            if (IsLinkedLocal(hidNeuron.id, outNeuron.id))
+                            hidNeuron.weight = new double[64, 64];
+                            double sum = 0;
+
+                            foreach (var input_neuron in from prevLayer in network.Layers.Where(layer => layer.LayerNumber == hidLayer.LayerNumber + 1) from input_neuron in prevLayer.Neurons where IsLinkedLocal(input_neuron.id, hidNeuron.id) select input_neuron)
                             {
-                                hidNeuron.weight = new double[64, 64];
-                                double sum = 0;
-
-                                foreach (var prevLayer in network.Layers.Where(layer => layer.LayerNumber == hidLayer.LayerNumber + 1))
+                                for (var x = 0; x < 64; x++)
                                 {
-                                    foreach (var input_neuron in prevLayer.Neurons)
+                                    for (var y = 0; y < 64; y++)
                                     {
-
-                                        if (IsLinkedLocal(input_neuron.id, hidNeuron.id))
-                                        {
-
-                                            for (var x = 0; x < 64; x++)
-                                            {
-                                                for (var y = 0; y < 64; y++)
-                                                {
-                                                    sum += input_neuron.weight[x, y] * input_neuron.a;
-                                                    hidNeuron.weight[x, y] += input_neuron.weight[x, y] * input_neuron.a;
-                                                }
-                                            }
-                                            //to_form(hidNeuron.weight);
-                                        }
+                                        sum += input_neuron.weight[x, y] * input_neuron.a;
+                                        hidNeuron.weight[x, y] += input_neuron.weight[x, y] * input_neuron.a;
                                     }
                                 }
-                                hidNeuron.a = Neuron.sigmoida(sum - hidNeuron.threshold);
+                                //to_form(hidNeuron.weight);
                             }
+                            hidNeuron.a = Neuron.sigmoida(sum - hidNeuron.threshold);
                         }
                     }
                 }
@@ -480,21 +505,18 @@ namespace Arkenstone
                 {
                     double sum = 0;
                     outNeuron.weight = new double[64, 64];
-                    foreach (var hidNeuron in network.Layers[1].Neurons)
+                    foreach (var hidNeuron in network.Layers[1].Neurons.Where(hidNeuron => IsLinkedLocal(hidNeuron.id, outNeuron.id)))
                     {
-                        if (IsLinkedLocal(hidNeuron.id, outNeuron.id))
+                        for (int x = 0; x < 64; x++)
                         {
-                            for (int x = 0; x < 64; x++)
+                            for (int y = 0; y < 64; y++)
                             {
-                                for (int y = 0; y < 64; y++)
-                                {
-                                    sum += hidNeuron.weight[x, y]*hidNeuron.a;
-                                    outNeuron.weight[x, y] += hidNeuron.weight[x, y]*hidNeuron.a;
-                                }
-
+                                sum += hidNeuron.weight[x, y]*hidNeuron.a;
+                                outNeuron.weight[x, y] += hidNeuron.weight[x, y]*hidNeuron.a;
                             }
-                            //to_form(outNeuron.weight);
+
                         }
+                        //to_form(outNeuron.weight);
                     }
                     outNeuron.a = Neuron.sigmoida(sum - outNeuron.threshold);
                 }
@@ -517,157 +539,86 @@ namespace Arkenstone
                 foreach (var neuron in layer.Neurons)
                 {
                     double sum = 0;
-                    foreach (var outputLayer in network.Layers.Where(l => l.LayerNumber == layer.LayerNumber - 1))
+                    foreach (var outNeuron in from outputLayer in network.Layers.Where(l => l.LayerNumber == layer.LayerNumber - 1) from outNeuron in outputLayer.Neurons where IsLinkedLocal(neuron.id, outNeuron.id) select outNeuron)
                     {
-                        foreach (var outNeuron in outputLayer.Neurons)
+                        for (var x = 0; x < 64; x++)
                         {
-                            if (IsLinkedLocal(neuron.id, outNeuron.id))
+                            for (var y = 0; y < 64; y++)
                             {
-                                for (var x = 0; x < 64; x++)
-                                {
-                                    for (var y = 0; y < 64; y++)
-                                    {
-                                        sum += outNeuron.error*neuron.weight[x, y];
-                                    }
-                                }
+                                sum += outNeuron.error*neuron.weight[x, y];
                             }
                         }
                     }
                     neuron.error = neuron.a*(1 - neuron.a)*sum;
                 }
             }
-
-            //foreach (var t in network.Layers)
-            //{
-            //    foreach (var neuron in t.Neurons)
-            //    {
-            //        double sum = 0.0;
-            //        foreach (var link in links.Where(link => link.id_out == neuron.id))
-            //        {
-            //            foreach (var layer in network.Layers.Where(layer => layer.LayerNumber == t.LayerNumber - 1))
-            //            {
-            //                for (var x = 0; x < neuron.weight.GetLength(0); x++)
-            //                {
-            //                    for (var y = 0; y < neuron.weight.GetLength(1); y++)
-            //                    {
-            //                        sum += layer.Neurons.Where(output_neuron => link.id_in == output_neuron.id).Sum(output_neuron => output_neuron.error*neuron.weight[x, y]);
-            //                    }
-            //                }
-            //                //MessageBox.Show("Сейчас обрабатываются слои:\n\n" + t.Name + " и " + layer.Name);
-            //            }
-            //            //MessageBox.Show("Текущий линк: " + link.id_out + " - " + link.id_in);
-            //        }
-            //        if(sum > 0)
-            //            neuron.error = neuron.a*(1.0 - neuron.a)*sum;
-            //        //MessageBox.Show("НЕейроны");
-            //    }
-            //    //MessageBox.Show("Дошел до сюда. слой - "+t.Name);
-            //}
         }
 
 
         public void update_output_weights()
         {
+            foreach (var outNeuron in network.Layers[0].Neurons.Where(outNeuron => limit_out - outNeuron.a > 0.01))
+            {
+                foreach (var hidNeuron in network.Layers[1].Neurons.Where(hidNeuron => IsLinkedLocal(hidNeuron.id, outNeuron.id)))
+                {
+                    for (int x = 0; x < 64; x++)
+                    {
+                        for (int y = 0; y < 64; y++)
+                        {
+                            if (outNeuron.weight[x, y] > 0)
+                                outNeuron.weight[x, y] += hidNeuron.weight[x, y] + speed * outNeuron.error * hidNeuron.a;
+                        }
+                    }
+                }
+                outNeuron.threshold = outNeuron.threshold - speed * outNeuron.error;
+            }
+        }
+
+        public void update_hidden_weights()
+        {
+            
             foreach (var outNeuron in network.Layers[0].Neurons)
             {
                 if (limit_out - outNeuron.a > 0.01)
                 {
-                    foreach (var hidNeuron in network.Layers[1].Neurons)
-                    {
-                        if (IsLinkedLocal(hidNeuron.id, outNeuron.id))
+                    foreach (var layer in network.Layers.Where(layer => layer.Name != "Output"))
+                    { 
+                        foreach (var neuron in layer.Neurons.Where(neuron => IsLinkedLocal(neuron.id, outNeuron.id)))
                         {
-                            for (int x = 0; x < 64; x++)
+                            foreach (var prevNeuron in from prevLayer in network.Layers.Where(x => x.LayerNumber - 1 == layer.LayerNumber) from prevNeuron in prevLayer.Neurons where IsLinkedLocal(prevNeuron.id, neuron.id) select prevNeuron)
                             {
-                                for (int y = 0; y < 64; y++)
+                                for (var x = 0; x < 64; x++)
                                 {
-                                    if (outNeuron.weight[x, y] > 0)
-                                        outNeuron.weight[x, y] += hidNeuron.weight[x, y] + speed * outNeuron.error * hidNeuron.a;
+                                    for (var y = 0; y < 64; y++)
+                                    {
+                                        if (neuron.weight[x, y] > 0)
+                                            neuron.weight[x, y] += prevNeuron.weight[x, y] + speed * neuron.error * prevNeuron.a;
+                                    }
                                 }
                             }
-                            
+                            neuron.threshold = neuron.threshold - speed * neuron.error;
                         }
                     }
-                    outNeuron.threshold = outNeuron.threshold - speed * outNeuron.error;
                 }
 
             }
-        }
-        public void update_hidden_weights()
-        {
-            //foreach (var lay in network.Layers.Where(l => l.Name == "Output"))
-            //{
-                foreach (var outNeuron in network.Layers[0].Neurons)//lay.Neurons)
-                {
-                    if (limit_out - outNeuron.a > 0.01)
-                    {
-                        //foreach (var layer in network.Layers.Where(layer => layer.Name != "Output"))
-                        //{
-                            
-                            foreach (var neuron in network.Layers[1].Neurons)//layer.Neurons)
-                            {
-                                if (IsLinkedLocal(neuron.id, outNeuron.id))
-                                {
-                                    //foreach (var prevLayer in network.Layers.Where(x => x.LayerNumber - 1 == layer.LayerNumber))
-                                    //{
-                                    foreach (var prevNeuron in network.Layers[2].Neurons)//prevLayer.Neurons)
-                                    {
-                                        if (IsLinkedLocal(prevNeuron.id, neuron.id))
-                                        {
-                                            for (var x = 0; x < 64; x++)
-                                            {
-                                                for (var y = 0; y < 64; y++)
-                                                {
-                                                    if (neuron.weight[x, y] > 0)
-                                                        neuron.weight[x, y] += prevNeuron.weight[x, y] + speed * neuron.error * prevNeuron.a;
-                                                }
-                                            }
-
-                                        }
-                                    }
-                                    //}
-                                    neuron.threshold = neuron.threshold - speed * neuron.error;
-
-                                }
-
-                            }
-
-                        //}
-                    }
-
-                }
-           // }
+           
         }
 
         public void update_FIRST_hidden_layer_weights()
         {
-            //foreach (var outputLayer in network.Layers.Where(l => l.Name == "Output"))
-            //{
-                foreach (var outNeuron in network.Layers[0].Neurons)//outputLayer.Neurons)
+            foreach (var inputNeuron in from outNeuron in network.Layers[0].Neurons where limit_out - outNeuron.a > 0.01 from firstLayer in network.Layers.Where(l => l.Name == "Enter") from inputNeuron in firstLayer.Neurons where IsLinkedGlobal(inputNeuron.id, outNeuron.id) select inputNeuron)
+            {
+                for (var x = 0; x < 64; x++)
                 {
-                    if (limit_out - outNeuron.a > 0.01)
+                    for (var y = 0; y < 64; y++)
                     {
-                        //foreach (var firstLayer in network.Layers.Where(l => l.Name == "Enter"))
-                        //{
-                            foreach (var inputNeuron in network.Layers[2].Neurons)//firstLayer.Neurons)
-                            {
-                                if (IsLinkedGlobal(inputNeuron.id, outNeuron.id))
-                                {
-                                    for (var x = 0; x < 64; x++)
-                                    {
-                                        for (var y = 0; y < 64; y++)
-                                        {
-                                            if (inputNeuron.weight[x, y] > 0)
-                                                inputNeuron.weight[x, y] = inputNeuron.weight[x, y] + speed * inputNeuron.error;
-                                        }
-                                    }
-                                    inputNeuron.threshold = inputNeuron.threshold - speed * inputNeuron.error;
-                                }
-                            }
-                        //}
+                        if (inputNeuron.weight[x, y] > 0)
+                            inputNeuron.weight[x, y] = inputNeuron.weight[x, y] + speed * inputNeuron.error;
                     }
-                    
                 }
-           // }
+                inputNeuron.threshold = inputNeuron.threshold - speed * inputNeuron.error;
+            }
         }
 
         public bool IsLinkedGlobal(int firstNeuron, int lastNeuron)
@@ -858,6 +809,8 @@ namespace Arkenstone
             cachedRepository1.InsertAll(diagram);
 
             display1.Diagram = diagram;
+
+
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -877,6 +830,9 @@ namespace Arkenstone
 
             inputList.Clear();
             input_signal.Add(enter);
+
+            //to_notepad(enter, Form1.alpha_count);
+            //alpha_count++;
 
         }
 
@@ -951,8 +907,10 @@ namespace Arkenstone
 
         private void cachedRepository1_ConnectionInserted(object sender, RepositoryShapeConnectionEventArgs e)
         {
+            
             if (e.ConnectorShape.GetConnectionInfos(ControlPointId.Any, null).Count<ShapeConnectionInfo>() == 2)
             {
+
                 first_vertex = e.ConnectorShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape;
                 last_vertex = e.ConnectorShape.GetConnectionInfo(ControlPointId.LastVertex, null).OtherShape;
                 if (first_vertex.Type.Name == "Picture")
@@ -974,8 +932,23 @@ namespace Arkenstone
 
         private void button2_Click(object sender, EventArgs e)
         {
+
+            backgroundWorker1.RunWorkerAsync();
+
+            
+
+        }
+
+        Stopwatch myStopwatch = new Stopwatch();
+        int iteration_count = 0;
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+
+            
+            myStopwatch.Start();
+
             bool ready = false;
-            int iteration_count = 0;
+            
 
             int good_count = 0;
 
@@ -1000,16 +973,43 @@ namespace Arkenstone
                     update_output_weights();
                     update_hidden_weights();
                     update_FIRST_hidden_layer_weights();
+
                     iteration_count++;
+                    
+                    backgroundWorker1.ReportProgress(iteration_count/2);
+                    
+                    
+                    
                 }
-                
-                //to_form();
-                //if (iteration_count == 10) MessageBox.Show("Стоп");
             }
 
+            
+
+
+            
+        }
+
+        private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            if (e.ProgressPercentage > progressBar1.Maximum)
+            {
+                progressBar1.Maximum += 10;
+            }
+            else
+            {
+                progressBar1.Value = e.ProgressPercentage;
+            }
+            
+        }
+
+        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            progressBar1.Value = progressBar1.Maximum;
+            myStopwatch.Stop();
+            double time = myStopwatch.ElapsedMilliseconds / 1000;
+            MessageBox.Show("Время: " + time + " секунд");
 
             MessageBox.Show(iteration_count.ToString() + " итераций");
-
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -1017,18 +1017,15 @@ namespace Arkenstone
             RecognizeLetter();
 
             recognize_sigm_out = new List<double>();
-            //teachers.Sort(delegate(Teacher teacher1, Teacher teacher2)
-            //{ return teacher1.Name.CompareTo(teacher2.Name); });  
-            //recognizeNetwork.Layers[recognizeNetwork.Layers.Count-1].Neurons.Sort(
-            //    (neuron1, neuron2) => neuron1.id.CompareTo(neuron2.id));
+         
 
             recognizeNetwork.Layers[recognizeNetwork.Layers.Count - 1].Neurons =
                 recognizeNetwork.Layers[recognizeNetwork.Layers.Count - 1].Neurons.OrderBy(o => o.id).ToList();
 
-            //List<Order> SortedList = objListOrder.OrderBy(o => o.OrderDate).ToList();
 
-            foreach (var neuron in recognizeNetwork.Layers.Last().Neurons)
+            for (int index = 0; index < recognizeNetwork.Layers.Last().Neurons.Count; index++)
             {
+                var neuron = recognizeNetwork.Layers.Last().Neurons[index];
                 recognize_sigm_out.Add(neuron.a);
             }
 
@@ -1061,6 +1058,8 @@ namespace Arkenstone
                     count++;
                 }
             }
+
+            
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -1080,6 +1079,7 @@ namespace Arkenstone
 
             }
 
+
         }
 
 
@@ -1098,7 +1098,11 @@ namespace Arkenstone
                         containFirst = true;
 
                     if (!containFirst)
-                        list.Add(new Neuron(Operations.GetBinaryPic((Bitmap) Operations.newDraw(s), input), Convert.ToInt32(s.Data)));
+                    {
+                        list.Add(new Neuron(Operations.GetBinaryPic((Bitmap)Operations.newDraw(s), input), Convert.ToInt32(s.Data)));
+                      
+                    }
+                        
                     
                         
                 }
@@ -1110,13 +1114,7 @@ namespace Arkenstone
         {
             var outputLayer = pNetwork.Layers.First(layer => layer.Name == "Output");
 
-            var hiddenList = (
-                from s in pDiagram.Shapes 
-                from n in outputLayer.Neurons 
-                where n.id == Convert.ToInt32(s.Data) 
-                from t in s.GetConnectionInfos(ControlPointId.Any, null)
-                select new Neuron(Operations.GetBinaryPic((Bitmap)Operations.newDraw(pDiagram.Shapes.First(shape => shape.Data == t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data)), input), 
-                                    Convert.ToInt32(t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data))).ToList();
+            var hiddenList = (from s in pDiagram.Shapes from n in outputLayer.Neurons where n.id == Convert.ToInt32(s.Data) from t in s.GetConnectionInfos(ControlPointId.Any, null) select new Neuron(Operations.GetBinaryPic((Bitmap) Operations.newDraw(pDiagram.Shapes.First(shape => shape.Data == t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data)), input), Convert.ToInt32(t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data))).ToList();
 
             pNetwork.Layers.Add(new NetLayer("Hidden", hiddenList));
 
@@ -1126,17 +1124,8 @@ namespace Arkenstone
 
             while (!IsFirstLayer(pDiagram, hiddenLayer))
             {
-                
-                hiddenList = (
-                    from s in pDiagram.Shapes 
-                    from n in hiddenLayer.Neurons 
-                    where n.id == Convert.ToInt32(s.Data) 
-                    let shi = s.GetConnectionInfos(ControlPointId.Any, null) 
-                    from t in shi 
-                    where t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data != s.Data
-                    select new Neuron(Operations.GetBinaryPic((Bitmap)Operations.newDraw(pDiagram.Shapes.First(shape => shape.Data == t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data)), input), 
-                                        Convert.ToInt32(t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data))).ToList();
-               
+                hiddenList = (from s in pDiagram.Shapes from n in hiddenLayer.Neurons where n.id == Convert.ToInt32(s.Data) let shi = s.GetConnectionInfos(ControlPointId.Any, null) from t in shi where t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data != s.Data select new Neuron(Operations.GetBinaryPic((Bitmap) Operations.newDraw(pDiagram.Shapes.First(shape => shape.Data == t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data)), input), Convert.ToInt32(t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data))).ToList();
+
                 pNetwork.Layers.Add(new NetLayer(lay_count + "-Hidden", hiddenList));
 
                 hiddenLayer = pNetwork.Layers.First(l => l.Name == lay_count + "-Hidden");
@@ -1172,33 +1161,7 @@ namespace Arkenstone
 
         private void button5_Click(object sender, EventArgs e)
         {
-            //to_form();
-            //run_network_new();
-            //calculate_output_layer_errors_new();
-            //calculate_hidden_layers_errors();
-            //testForm tf = new testForm();
-
-            //string test = "";
-
-            //foreach (var layer in network.Layers)
-            //{
-            //    foreach (var neuron in layer.Neurons)
-            //    {
-            //        test = "";
-            //        for (int i = 0; i < neuron.weight.GetLength(0); i++)
-            //        {
-            //            for (int j = 0; j < neuron.weight.GetLength(1); j++)
-            //            {
-            //                test += neuron.weight[i, j] + " ";
-            //            }
-            //            test += "\n";
-            //        }
-            //        tf.richTextBox1.Text = test;
-            //        MessageBox.Show(neuron.id.ToString());
-            //        tf.ShowDialog();
-            //    }
-            //}
-            //update_hidden_weights();
+            CreateLinksBeetwenNeurons(firstLayerNeurons, hiddenLayerNeurons);
         }
 
         private void button6_Click(object sender, EventArgs e)
@@ -1248,6 +1211,156 @@ namespace Arkenstone
 
             return point;
         }
+
+        private void CreateLinksBeetwenNeurons(List<Shape> shapes, List<Shape> hidden_shapes)
+        {
+            int y = 100;
+            
+            Shape box = (Shape)project1.ShapeTypes["Box"].CreateInstance();
+            for (int i = shapes.Count - 1; i < (connect.Count + shapes.Count) - 1; i++)
+            {
+                foreach (var shape in shapes)
+                {
+                    if (connect[i - (shapes.Count - 1)].Contains(Convert.ToInt32(shape.Data)))
+                    {
+                        links.Add(new Link(Convert.ToInt32(shape.Data), (i+2)));
+                        
+                        if (connect[i - (shapes.Count - 1)][0] == Convert.ToInt32(shape.Data))
+                        {
+
+                            y = shape.Y + 45;
+                            box = (Shape)project1.ShapeTypes["Box"].CreateInstance();
+                            box.Data = count.ToString();
+                            box.X = 250;
+                            box.Y = y;
+                            diagram.Shapes.Add(box);
+                            cachedRepository1.Insert((Shape)box, diagram);
+
+                            
+
+                            count++;
+                            
+
+                            
+                            var arrow = (Polyline)project1.ShapeTypes["Polyline"].CreateInstance();
+                            
+                            diagram.Shapes.Add(arrow);
+                            cachedRepository1.Insert((Shape)arrow, diagram);
+
+                            
+                            arrow.Connect(ControlPointId.FirstVertex, shape, ControlPointId.Reference);
+                            arrow.Connect(ControlPointId.LastVertex, box, ControlPointId.Reference);
+
+                           
+
+                            Operations.ConnectShapesAutomatically(display1, shape, ref box, project1, diagram, cachedRepository1, arrow);
+                            hiddenLayerNeurons.Add(box);
+                        }
+
+                        else
+                        {
+                            var arrow = (Polyline)project1.ShapeTypes["Polyline"].CreateInstance();
+
+                            diagram.Shapes.Add(arrow);
+                            cachedRepository1.Insert((Shape)arrow, diagram);
+
+                            arrow.Connect(ControlPointId.FirstVertex, shape, ControlPointId.Reference);
+                            arrow.Connect(ControlPointId.LastVertex, box, ControlPointId.Reference);
+
+                            Operations.ConnectShapesAutomatically(display1, shape, ref box, project1, diagram, cachedRepository1, arrow);
+                        }
+                        
+                    }
+                }
+            }
+
+            int y2 = 200;
+
+
+            Shape box2 = (Shape)project1.ShapeTypes["Box"].CreateInstance();
+            for (int i = (shapes.Count - 1)+(hidden_shapes.Count - 1); i < (hidden_shapes.Count + shapes.Count + connectOut.Count) - 2; i++)
+            {
+                foreach(var shape in hidden_shapes)
+                {
+                    if (connectOut[i - ((shapes.Count - 1) + (hidden_shapes.Count - 1))].Contains(Convert.ToInt32(shape.Data) - Convert.ToInt32(shapes.Count)))
+                    {
+                        links.Add(new Link(Convert.ToInt32(shape.Data), (i + 3)));
+
+                        if (connectOut[i - ((shapes.Count - 1) + (hidden_shapes.Count - 1))][0] == (Convert.ToInt32(shape.Data) - Convert.ToInt32(shapes.Count)))
+                        {
+                            y2 = shape.Y + 90;
+                            box2 = (Shape)project1.ShapeTypes["Box"].CreateInstance();
+                            box2.Data = count.ToString();
+                            box2.X = 450;
+                            box2.Y = y2;
+                            diagram.Shapes.Add(box2);
+                            cachedRepository1.Insert((Shape)box2, diagram);
+
+
+                            count++;
+                            
+
+
+                            var arrow = (Polyline)project1.ShapeTypes["Polyline"].CreateInstance();
+
+                            diagram.Shapes.Add(arrow);
+                            cachedRepository1.Insert((Shape)arrow, diagram);
+
+
+                            arrow.Connect(ControlPointId.FirstVertex, shape, ControlPointId.Reference);
+                            arrow.Connect(ControlPointId.LastVertex, box2, ControlPointId.Reference);
+
+
+
+                            Operations.ConnectShapesAutomatically(display1, shape, ref box2, project1, diagram, cachedRepository1, arrow);
+
+                            
+                        }
+
+                        else
+                        {
+                            var arrow = (Polyline)project1.ShapeTypes["Polyline"].CreateInstance();
+
+                            diagram.Shapes.Add(arrow);
+                            cachedRepository1.Insert((Shape)arrow, diagram);
+
+                            arrow.Connect(ControlPointId.FirstVertex, shape, ControlPointId.Reference);
+                            arrow.Connect(ControlPointId.LastVertex, box2, ControlPointId.Reference);
+
+                            Operations.ConnectShapesAutomatically(display1, shape, ref box2, project1, diagram, cachedRepository1, arrow);
+                        }
+                    }
+                    
+                    
+                }
+            }
+
+
+
+
+
+
+        }
+
+        private void CreateSecondHiddenLayer(List<Shape> shapes)
+        {
+            for (int i = 0; i < shapes.Count; i++)
+            {
+                for (int j = 0; j < connect.Count; j++)
+                {
+                    if (connect[j].Contains(Convert.ToInt32(shapes[i].Data)))
+                    {
+                        
+                    }
+                }
+                
+            }
+            
+            //foreach (var shape in shapes.Where(s => s.Type.Name == "Box"))
+            //{
+
+            //}
+        }
         private void CreateFirstHiddenLayer(List<Image> images)
         {
             
@@ -1269,7 +1382,7 @@ namespace Arkenstone
                     g.Clear(Color.White);
                     g.DrawImage(sign, p.X - 10, p.Y - 8);
 
-
+                    
 
                     Picture box = (Picture)project1.ShapeTypes["Picture"].CreateInstance();
                     box.Image = new NamedImage { Image = neuron };
@@ -1282,6 +1395,8 @@ namespace Arkenstone
                     diagram.Shapes.Add(box);
                     cachedRepository1.Insert((Shape)box, diagram);
 
+
+                    firstLayerNeurons.Add((Shape)box);
                     count++;
 
                     //for (int k = 0; k < connect.Count; k++)
@@ -1300,5 +1415,14 @@ namespace Arkenstone
                 
             }
         }
+
+        private void button9_Click(object sender, EventArgs e)
+        {
+            Application.Restart();
+        }
+
+        
+
+        
     }
 }
