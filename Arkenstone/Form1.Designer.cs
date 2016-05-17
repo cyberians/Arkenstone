@@ -65,6 +65,7 @@
             this.button9 = new System.Windows.Forms.Button();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.button10 = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
@@ -186,7 +187,7 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Location = new System.Drawing.Point(49, 426);
+            this.pictureBox1.Location = new System.Drawing.Point(12, 435);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(64, 64);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -281,7 +282,7 @@
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(502, 541);
+            this.button5.Location = new System.Drawing.Point(503, 541);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(75, 23);
             this.button5.TabIndex = 11;
@@ -315,7 +316,7 @@
             // 
             // button7
             // 
-            this.button7.Location = new System.Drawing.Point(93, 505);
+            this.button7.Location = new System.Drawing.Point(94, 435);
             this.button7.Name = "button7";
             this.button7.Size = new System.Drawing.Size(75, 42);
             this.button7.TabIndex = 14;
@@ -361,11 +362,22 @@
             this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker1_ProgressChanged);
             this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
             // 
+            // button10
+            // 
+            this.button10.Location = new System.Drawing.Point(584, 541);
+            this.button10.Name = "button10";
+            this.button10.Size = new System.Drawing.Size(75, 23);
+            this.button10.TabIndex = 18;
+            this.button10.Text = "Пакетное";
+            this.button10.UseVisualStyleBackColor = true;
+            this.button10.Click += new System.EventHandler(this.button10_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1176, 613);
+            this.Controls.Add(this.button10);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.button9);
             this.Controls.Add(this.button8);
@@ -436,6 +448,7 @@
         private System.Windows.Forms.Button button9;
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.Windows.Forms.Button button10;
     }
 }
 

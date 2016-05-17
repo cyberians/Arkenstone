@@ -449,6 +449,36 @@ namespace Arkenstone
                 {
                     foreach (var input_neuron in network.Layers[network.Layers.Count - 1].Neurons)
                     {
+                        //Shape Line = null;
+                        //var currentLine = diagram.Shapes.Where(s => s.Type.Name == "Polyline");
+                        //foreach (var line in currentLine.Where(line => line.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data ==
+                        //                                               input_neuron.id.ToString()))
+                        //{
+                        //    Line = line;
+                        //}
+                                
+                        //if (Line != null)
+                        //{
+                        //    Line.Rotate(90, 500, 200);
+                            
+                        ////    for (int i = 0; i < 1000; i++)
+                        ////    {
+                        ////        //var arrow = (Polyline)project1.ShapeTypes["Polyline"].CreateInstance();
+                        ////        //arrow.LineStyle = project1.Design.LineStyles.HighlightDashed;
+                        ////        //diagram.Shapes.Add(arrow);
+                        ////        //cachedRepository1.Insert((Shape)arrow, diagram);
+                        ////        //arrow.Connect(ControlPointId.FirstVertex, Line.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape, ControlPointId.Reference);
+                        ////        //arrow.Connect(ControlPointId.LastVertex, Line.GetConnectionInfo(ControlPointId.LastVertex, null).OtherShape, ControlPointId.Reference);
+                        ////    }
+                            
+
+                            
+                        ////    //Line.
+                        //    Wait(1000);
+                        //}
+                            
+
+                        
                         if (IsLinkedGlobal(input_neuron.id, outNeuron.id))
                         {
                             double sum = 0;
@@ -459,7 +489,8 @@ namespace Arkenstone
                                     sum += input_neuron.weight[x, y];
                                 }
                             }
-                            input_neuron.a = Neuron.sigmoida(sum - input_neuron.threshold);
+                            input_neuron.a = sum > input_neuron.threshold ? 1 : 0;
+                            //input_neuron.a = Neuron.sigmoida(sum - input_neuron.threshold);
                         }
                     }
                 }
@@ -491,7 +522,8 @@ namespace Arkenstone
                                 }
                                 //to_form(hidNeuron.weight);
                             }
-                            hidNeuron.a = Neuron.sigmoida(sum - hidNeuron.threshold);
+                            hidNeuron.a = sum > hidNeuron.threshold ? 1 : 0;
+                            //hidNeuron.a = Neuron.sigmoida(sum - hidNeuron.threshold);
                         }
                     }
                 }
@@ -518,7 +550,8 @@ namespace Arkenstone
                         }
                         //to_form(outNeuron.weight);
                     }
-                    outNeuron.a = Neuron.sigmoida(sum - outNeuron.threshold);
+                    outNeuron.a = sum > outNeuron.threshold ? 1 : 0;
+                    //outNeuron.a = Neuron.sigmoida(sum - outNeuron.threshold);
                 }
             }
                 
@@ -687,7 +720,9 @@ namespace Arkenstone
                         submit[x, y] = inputNeuron.weight[x, y] * enter[x, y];
                     }
                 }
+
                 sigma = Neuron.sigmoida(sum - inputNeuron.threshold);
+                //sigma = sum > inputNeuron.threshold ? 1 : 0;
 
                 
                 recognizeNetwork.Layers[0].Neurons.Add(new Neuron(sigma, submit, inputNeuron.id));
@@ -724,6 +759,7 @@ namespace Arkenstone
 
                     }
                     sigma = Neuron.sigmoida(sum - neuron.threshold);
+                    //sigma = sum > neuron.threshold ? 1 : 0;
                     recognizeNetwork.Layers.Last().Neurons.Add(new Neuron(sigma, submit, neuron.id));
                 }
             }
@@ -1161,6 +1197,7 @@ namespace Arkenstone
 
         private void button5_Click(object sender, EventArgs e)
         {
+            CreateFirstHiddenLayer(loadedImages);
             CreateLinksBeetwenNeurons(firstLayerNeurons, hiddenLayerNeurons);
         }
 
@@ -1169,9 +1206,10 @@ namespace Arkenstone
             MessageBox.Show(IsLinkedLocal(Convert.ToInt32(textBox1.Text), Convert.ToInt32(textBox2.Text)) ? "Да" : "Нет");
         }
 
+        List<Image> loadedImages = new List<Image>();
         private void button7_Click(object sender, EventArgs e)
         {
-            var loadedImages = new List<Image>();
+            loadedImages.Clear();
 
             var dr = openFileDialog2.ShowDialog();
             if (dr == DialogResult.OK)
@@ -1185,7 +1223,7 @@ namespace Arkenstone
 
             
             
-            CreateFirstHiddenLayer(loadedImages);
+            
         }
 
         private void InsertNeuron()
@@ -1421,8 +1459,47 @@ namespace Arkenstone
             Application.Restart();
         }
 
-        
+        private void button10_Click(object sender, EventArgs e)
+        {
+            listBox1.Items.Clear();
+            for (var i = 0; i < loadedImages.Count; i++)
+            {
+                enter = Operations.GetBinaryPic((Bitmap)loadedImages[i], enter);
+                RecognizeLetter();
 
-        
+
+                recognize_sigm_out = new List<double>();
+         
+
+                recognizeNetwork.Layers[recognizeNetwork.Layers.Count - 1].Neurons =
+                    recognizeNetwork.Layers[recognizeNetwork.Layers.Count - 1].Neurons.OrderBy(o => o.id).ToList();
+
+
+                foreach (var neuron in recognizeNetwork.Layers.Last().Neurons)
+                {
+                    recognize_sigm_out.Add(neuron.a);
+                }
+
+                double max = recognize_sigm_out.Max();
+
+
+                int RECOGNIZED = 0;
+
+                for (int j = 0; j < recognizeNetwork.Layers.Last().Neurons.Count(); j++)
+                {
+
+                    if (recognize_sigm_out[j] == max)
+                    {
+                        
+                        RECOGNIZED = j;
+                    }
+                   
+                }
+
+
+
+                listBox1.Items.Add(alphabet[i] + " => " + alphabet[RECOGNIZED]);
+            }
+        }
     }
 }
