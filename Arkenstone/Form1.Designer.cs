@@ -30,7 +30,7 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            Dataweb.NShape.RoleBasedSecurityManager roleBasedSecurityManager1 = new Dataweb.NShape.RoleBasedSecurityManager();
+            Dataweb.NShape.RoleBasedSecurityManager roleBasedSecurityManager3 = new Dataweb.NShape.RoleBasedSecurityManager();
             this.listView1 = new System.Windows.Forms.ListView();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.файлToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -44,9 +44,7 @@
             this.propertyPresenter1 = new Dataweb.NShape.WinFormsUI.PropertyPresenter();
             this.toolSetController1 = new Dataweb.NShape.Controllers.ToolSetController();
             this.toolSetListViewPresenter1 = new Dataweb.NShape.WinFormsUI.ToolSetListViewPresenter(this.components);
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.button1 = new System.Windows.Forms.Button();
-            this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.button2 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
@@ -66,9 +64,12 @@
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.button10 = new System.Windows.Forms.Button();
+            this.button11 = new System.Windows.Forms.Button();
+            this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.menuStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // listView1
@@ -103,6 +104,7 @@
             // propertyGrid1
             // 
             this.propertyGrid1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.propertyGrid1.CategoryForeColor = System.Drawing.SystemColors.InactiveCaptionText;
             this.propertyGrid1.Location = new System.Drawing.Point(921, 283);
             this.propertyGrid1.Name = "propertyGrid1";
             this.propertyGrid1.Size = new System.Drawing.Size(243, 318);
@@ -135,9 +137,9 @@
             this.project1.LibrarySearchPaths = ((System.Collections.Generic.IList<string>)(resources.GetObject("project1.LibrarySearchPaths")));
             this.project1.Name = null;
             this.project1.Repository = this.cachedRepository1;
-            roleBasedSecurityManager1.CurrentRole = Dataweb.NShape.StandardRole.Administrator;
-            roleBasedSecurityManager1.CurrentRoleName = "Administrator";
-            this.project1.SecurityManager = roleBasedSecurityManager1;
+            roleBasedSecurityManager3.CurrentRole = Dataweb.NShape.StandardRole.Administrator;
+            roleBasedSecurityManager3.CurrentRoleName = "Administrator";
+            this.project1.SecurityManager = roleBasedSecurityManager3;
             // 
             // display1
             // 
@@ -185,17 +187,6 @@
             this.toolSetListViewPresenter1.ShowDefaultContextMenu = true;
             this.toolSetListViewPresenter1.ToolSetController = this.toolSetController1;
             // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Location = new System.Drawing.Point(12, 435);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(64, 64);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.pictureBox1.TabIndex = 4;
-            this.pictureBox1.TabStop = false;
-            this.pictureBox1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseClick);
-            this.pictureBox1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseDoubleClick);
-            // 
             // button1
             // 
             this.button1.Location = new System.Drawing.Point(12, 505);
@@ -205,15 +196,6 @@
             this.button1.Text = "Открыть";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // pictureBox2
-            // 
-            this.pictureBox2.Location = new System.Drawing.Point(12, 541);
-            this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(64, 64);
-            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.pictureBox2.TabIndex = 6;
-            this.pictureBox2.TabStop = false;
             // 
             // openFileDialog1
             // 
@@ -372,11 +354,46 @@
             this.button10.UseVisualStyleBackColor = true;
             this.button10.Click += new System.EventHandler(this.button10_Click);
             // 
+            // button11
+            // 
+            this.button11.Enabled = false;
+            this.button11.Image = global::Arkenstone.Properties.Resources.cuda_mini;
+            this.button11.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.button11.Location = new System.Drawing.Point(1003, 0);
+            this.button11.Name = "button11";
+            this.button11.Size = new System.Drawing.Size(173, 24);
+            this.button11.TabIndex = 19;
+            this.button11.Text = "Панель управления CUDA";
+            this.button11.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.button11.UseVisualStyleBackColor = true;
+            this.button11.Click += new System.EventHandler(this.button11_Click);
+            // 
+            // pictureBox2
+            // 
+            this.pictureBox2.Location = new System.Drawing.Point(12, 541);
+            this.pictureBox2.Name = "pictureBox2";
+            this.pictureBox2.Size = new System.Drawing.Size(64, 64);
+            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pictureBox2.TabIndex = 6;
+            this.pictureBox2.TabStop = false;
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Location = new System.Drawing.Point(12, 435);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(64, 64);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pictureBox1.TabIndex = 4;
+            this.pictureBox1.TabStop = false;
+            this.pictureBox1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseClick);
+            this.pictureBox1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseDoubleClick);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1176, 613);
+            this.Controls.Add(this.button11);
             this.Controls.Add(this.button10);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.button9);
@@ -405,8 +422,8 @@
             this.Load += new System.EventHandler(this.Form1_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -449,6 +466,7 @@
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.Button button10;
+        private System.Windows.Forms.Button button11;
     }
 }
 

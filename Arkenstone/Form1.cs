@@ -16,15 +16,29 @@ using Dataweb.NShape.GeneralShapes;
 using Dataweb.NShape.WinFormsUI;
 using Arkenstone.Classes;
 using Dataweb.NShape.Advanced;
+using System.Runtime.InteropServices;
+using Arkenstone.Classes.Cuda;
 
 namespace Arkenstone
 {
     public partial class Form1 : Form
     {
+        [DllImport("96cores.dll", CallingConvention = CallingConvention.Cdecl)] //cuda
+        public static extern bool check_connection();//cuda
+
+        public bool enable_CUDA;
+
+        public int dev_index = 0; // card index for Cuda
+        public int cl_mem; //memory Cuda limit
+        public Point cl_grd; //grid(X,Y) Cuda limit
+
         public Form1()
         {
             InitializeComponent();
+            enable_CUDA = true;
         }
+
+        Size picSize = new Size(64, 64);
 
         Diagram diagram;
 
@@ -399,8 +413,6 @@ namespace Arkenstone
                 }
             }
             File.WriteAllText(word_file, test + Environment.NewLine);
-            
-            
         }
         public void to_form(double [,] massive)
         {
@@ -440,122 +452,129 @@ namespace Arkenstone
 
 
 
-        public void run_network_new()
+        public unsafe void run_network_new()
         {
-            //первый скрытый слой
-            foreach (var outNeuron in network.Layers[0].Neurons)
+            if (enable_CUDA)
             {
-                if (limit_out - outNeuron.a > 0.01)
+                //первый скрытый слой
+                foreach (var outNeuron in network.Layers[0].Neurons)
                 {
-                    foreach (var input_neuron in network.Layers[network.Layers.Count - 1].Neurons)
+                    if (limit_out - outNeuron.a > 0.01)
                     {
-                        //Shape Line = null;
-                        //var currentLine = diagram.Shapes.Where(s => s.Type.Name == "Polyline");
-                        //foreach (var line in currentLine.Where(line => line.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data ==
-                        //                                               input_neuron.id.ToString()))
-                        //{
-                        //    Line = line;
-                        //}
-                                
-                        //if (Line != null)
-                        //{
-                        //    Line.Rotate(90, 500, 200);
-                            
-                        ////    for (int i = 0; i < 1000; i++)
-                        ////    {
-                        ////        //var arrow = (Polyline)project1.ShapeTypes["Polyline"].CreateInstance();
-                        ////        //arrow.LineStyle = project1.Design.LineStyles.HighlightDashed;
-                        ////        //diagram.Shapes.Add(arrow);
-                        ////        //cachedRepository1.Insert((Shape)arrow, diagram);
-                        ////        //arrow.Connect(ControlPointId.FirstVertex, Line.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape, ControlPointId.Reference);
-                        ////        //arrow.Connect(ControlPointId.LastVertex, Line.GetConnectionInfo(ControlPointId.LastVertex, null).OtherShape, ControlPointId.Reference);
-                        ////    }
-                            
-
-                            
-                        ////    //Line.
-                        //    Wait(1000);
-                        //}
-                            
-
-                        
-                        if (IsLinkedGlobal(input_neuron.id, outNeuron.id))
+                        foreach (var input_neuron in network.Layers[network.Layers.Count - 1].Neurons)
                         {
-                            double sum = 0;
-                            for (var x = 0; x < 64; x++)
+                            //Shape Line = null;
+                            //var currentLine = diagram.Shapes.Where(s => s.Type.Name == "Polyline");
+                            //foreach (var line in currentLine.Where(line => line.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data ==
+                            //                                               input_neuron.id.ToString()))
+                            //{
+                            //    Line = line;
+                            //}
+
+                            //if (Line != null)
+                            //{
+                            //    Line.Rotate(90, 500, 200);
+
+                            ////    for (int i = 0; i < 1000; i++)
+                            ////    {
+                            ////        //var arrow = (Polyline)project1.ShapeTypes["Polyline"].CreateInstance();
+                            ////        //arrow.LineStyle = project1.Design.LineStyles.HighlightDashed;
+                            ////        //diagram.Shapes.Add(arrow);
+                            ////        //cachedRepository1.Insert((Shape)arrow, diagram);
+                            ////        //arrow.Connect(ControlPointId.FirstVertex, Line.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape, ControlPointId.Reference);
+                            ////        //arrow.Connect(ControlPointId.LastVertex, Line.GetConnectionInfo(ControlPointId.LastVertex, null).OtherShape, ControlPointId.Reference);
+                            ////    }
+
+
+
+                            ////    //Line.
+                            //    Wait(1000);
+                            //}
+
+
+
+                            if (IsLinkedGlobal(input_neuron.id, outNeuron.id))
                             {
-                                for (var y = 0; y < 64; y++)
-                                {
-                                    sum += input_neuron.weight[x, y];
-                                }
-                            }
-                            input_neuron.a = sum > input_neuron.threshold ? 1 : 0;
-                            //input_neuron.a = Neuron.sigmoida(sum - input_neuron.threshold);
-                        }
-                    }
-                }
-            }
-
-
-            //все средние слои
-            foreach (var outNeuron in network.Layers[0].Neurons)
-            {
-                if (limit_out - outNeuron.a > 0.01)
-                {
-                    foreach (var hidLayer in network.Layers.OrderByDescending(layer => layer.LayerNumber).Where(layer => layer.Name != "Enter"))
-                    {
-                        //MessageBox.Show(hidLayer.Name);
-                        foreach (var hidNeuron in hidLayer.Neurons.Where(hidNeuron => IsLinkedLocal(hidNeuron.id, outNeuron.id)))
-                        {
-                            hidNeuron.weight = new double[64, 64];
-                            double sum = 0;
-
-                            foreach (var input_neuron in from prevLayer in network.Layers.Where(layer => layer.LayerNumber == hidLayer.LayerNumber + 1) from input_neuron in prevLayer.Neurons where IsLinkedLocal(input_neuron.id, hidNeuron.id) select input_neuron)
-                            {
+                                double sum = 0;
                                 for (var x = 0; x < 64; x++)
                                 {
                                     for (var y = 0; y < 64; y++)
                                     {
-                                        sum += input_neuron.weight[x, y] * input_neuron.a;
-                                        hidNeuron.weight[x, y] += input_neuron.weight[x, y] * input_neuron.a;
+                                        sum += input_neuron.weight[x, y];
                                     }
                                 }
-                                //to_form(hidNeuron.weight);
+                                //input_neuron.a = sum > input_neuron.threshold ? 1 : 0;
+                                input_neuron.a = Neuron.sigmoida(sum - input_neuron.threshold);
                             }
-                            hidNeuron.a = sum > hidNeuron.threshold ? 1 : 0;
-                            //hidNeuron.a = Neuron.sigmoida(sum - hidNeuron.threshold);
                         }
                     }
                 }
-            
-            }
 
-            //выходной слой
-            foreach (var outNeuron in network.Layers[0].Neurons)
-            {
-                if (limit_out - outNeuron.a > 0.01)
+
+                //все средние слои
+                foreach (var outNeuron in network.Layers[0].Neurons)
                 {
-                    double sum = 0;
-                    outNeuron.weight = new double[64, 64];
-                    foreach (var hidNeuron in network.Layers[1].Neurons.Where(hidNeuron => IsLinkedLocal(hidNeuron.id, outNeuron.id)))
+                    if (limit_out - outNeuron.a > 0.01)
                     {
-                        for (int x = 0; x < 64; x++)
+                        foreach (var hidLayer in network.Layers.OrderByDescending(layer => layer.LayerNumber).Where(layer => layer.Name != "Enter"))
                         {
-                            for (int y = 0; y < 64; y++)
+                            //MessageBox.Show(hidLayer.Name);
+                            foreach (var hidNeuron in hidLayer.Neurons.Where(hidNeuron => IsLinkedLocal(hidNeuron.id, outNeuron.id)))
                             {
-                                sum += hidNeuron.weight[x, y]*hidNeuron.a;
-                                outNeuron.weight[x, y] += hidNeuron.weight[x, y]*hidNeuron.a;
-                            }
+                                hidNeuron.weight = new double[64, 64];
+                                double sum = 0;
 
+                                foreach (var input_neuron in from prevLayer in network.Layers.Where(layer => layer.LayerNumber == hidLayer.LayerNumber + 1) from input_neuron in prevLayer.Neurons where IsLinkedLocal(input_neuron.id, hidNeuron.id) select input_neuron)
+                                {
+                                    for (var x = 0; x < 64; x++)
+                                    {
+                                        for (var y = 0; y < 64; y++)
+                                        {
+                                            sum += input_neuron.weight[x, y] * input_neuron.a;
+                                            hidNeuron.weight[x, y] += input_neuron.weight[x, y] * input_neuron.a;
+                                        }
+                                    }
+                                    //to_form(hidNeuron.weight);
+                                }
+                                //hidNeuron.a = sum > hidNeuron.threshold ? 1 : 0;
+                                hidNeuron.a = Neuron.sigmoida(sum - hidNeuron.threshold);
+                            }
                         }
-                        //to_form(outNeuron.weight);
                     }
-                    outNeuron.a = sum > outNeuron.threshold ? 1 : 0;
-                    //outNeuron.a = Neuron.sigmoida(sum - outNeuron.threshold);
+
+                }
+
+                //выходной слой
+                foreach (var outNeuron in network.Layers[0].Neurons)
+                {
+                    if (limit_out - outNeuron.a > 0.01)
+                    {
+                        double sum = 0;
+                        outNeuron.weight = new double[64, 64];
+                        foreach (var hidNeuron in network.Layers[1].Neurons.Where(hidNeuron => IsLinkedLocal(hidNeuron.id, outNeuron.id)))
+                        {
+                            for (int x = 0; x < 64; x++)
+                            {
+                                for (int y = 0; y < 64; y++)
+                                {
+                                    sum += hidNeuron.weight[x, y] * hidNeuron.a;
+                                    outNeuron.weight[x, y] += hidNeuron.weight[x, y] * hidNeuron.a;
+                                }
+
+                            }
+                            //to_form(outNeuron.weight);
+                        }
+                        //outNeuron.a = sum > outNeuron.threshold ? 1 : 0;
+                        outNeuron.a = Neuron.sigmoida(sum - outNeuron.threshold);
+                    }
                 }
             }
-                
-
+            else
+            {
+                //Pack1 p1 = new Pack1(ref network, ref links, ref picSize, 1);
+                //int* links_in;
+                //int* links_out;
+            }
         }
 
         public void calculate_output_layer_errors_new()
@@ -567,29 +586,39 @@ namespace Arkenstone
 
         public void calculate_hidden_layers_errors()
         {
-            foreach (var layer in network.Layers.Where(l => l.Name != "Output"))
+            if (enable_CUDA)
             {
-                foreach (var neuron in layer.Neurons)
+                foreach (var layer in network.Layers.Where(l => l.Name != "Output"))
                 {
-                    double sum = 0;
-                    foreach (var outNeuron in from outputLayer in network.Layers.Where(l => l.LayerNumber == layer.LayerNumber - 1) from outNeuron in outputLayer.Neurons where IsLinkedLocal(neuron.id, outNeuron.id) select outNeuron)
+                    foreach (var neuron in layer.Neurons)
                     {
-                        for (var x = 0; x < 64; x++)
+                        double sum = 0;
+                        foreach (var outNeuron in from outputLayer in network.Layers.Where(l => l.LayerNumber == layer.LayerNumber - 1) from outNeuron in outputLayer.Neurons where IsLinkedLocal(neuron.id, outNeuron.id) select outNeuron)
                         {
-                            for (var y = 0; y < 64; y++)
+                            for (var x = 0; x < 64; x++)
                             {
-                                sum += outNeuron.error*neuron.weight[x, y];
+                                for (var y = 0; y < 64; y++)
+                                {
+                                    sum += outNeuron.error * neuron.weight[x, y];
+                                }
                             }
                         }
+                        neuron.error = neuron.a * (1 - neuron.a) * sum;
                     }
-                    neuron.error = neuron.a*(1 - neuron.a)*sum;
                 }
+            }
+            else
+            {
+                Pack2 p2 = new Pack2(ref network, ref links, ref picSize, 1);
+                //
             }
         }
 
 
         public void update_output_weights()
         {
+            Pack3 p3 = new Pack3(ref network, ref links, ref picSize, 0,2);//не подавать последний
+
             foreach (var outNeuron in network.Layers[0].Neurons.Where(outNeuron => limit_out - outNeuron.a > 0.01))
             {
                 foreach (var hidNeuron in network.Layers[1].Neurons.Where(hidNeuron => IsLinkedLocal(hidNeuron.id, outNeuron.id)))
@@ -847,6 +876,18 @@ namespace Arkenstone
             display1.Diagram = diagram;
 
 
+
+
+            //cuda
+            try
+            {
+                if (check_connection())
+                    button11.Enabled = true;
+            }
+         catch
+            {
+
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -1427,7 +1468,7 @@ namespace Arkenstone
 
                     box.FillStyle = project1.Design.FillStyles.Transparent;
                     box.Data = count.ToString();
-                    //box.Text = box.Data;
+                    box.Text = box.Data;
                     box.X = StartPoint(box).X;
                     box.Y = StartPoint(box).Y;
                     diagram.Shapes.Add(box);
@@ -1500,6 +1541,12 @@ namespace Arkenstone
 
                 listBox1.Items.Add(alphabet[i] + " => " + alphabet[RECOGNIZED]);
             }
+        }
+
+        private void button11_Click(object sender, EventArgs e)
+        {
+            Cuda.Cuda cu = new Cuda.Cuda(this);
+            cu.Show();
         }
     }
 }

@@ -24,3 +24,20 @@ C:\Users\Vladimir\YandexDisk\Учеба\Диплом\Arkenstone\Arkenstone\obj\D
 C:\Users\Vladimir\YandexDisk\Учеба\Диплом\Arkenstone\Arkenstone\obj\Debug\Arkenstone.csproj.GenerateResource.Cache
 C:\Users\Vladimir\YandexDisk\Учеба\Диплом\Arkenstone\Arkenstone\obj\Debug\Arkenstone.testForm.resources
 E:\Яндекс Диск\Учеба\Диплом\Arkenstone\Arkenstone\obj\Debug\Arkenstone.testForm.resources
+C:\ProgramData\NVIDIA Corporation\CUDA Samples\v7.5\Arkenstone\Arkenstone\Arkenstone\bin\Debug\Arkenstone.exe.config
+C:\ProgramData\NVIDIA Corporation\CUDA Samples\v7.5\Arkenstone\Arkenstone\Arkenstone\obj\Debug\Arkenstone.exe
+C:\ProgramData\NVIDIA Corporation\CUDA Samples\v7.5\Arkenstone\Arkenstone\Arkenstone\obj\Debug\Arkenstone.pdb
+C:\ProgramData\NVIDIA Corporation\CUDA Samples\v7.5\Arkenstone\Arkenstone\Arkenstone\bin\Debug\Arkenstone.exe
+C:\ProgramData\NVIDIA Corporation\CUDA Samples\v7.5\Arkenstone\Arkenstone\Arkenstone\bin\Debug\Arkenstone.pdb
+C:\ProgramData\NVIDIA Corporation\CUDA Samples\v7.5\Arkenstone\Arkenstone\Arkenstone\bin\Debug\Dataweb.NShape.pdb
+C:\ProgramData\NVIDIA Corporation\CUDA Samples\v7.5\Arkenstone\Arkenstone\Arkenstone\bin\Debug\Dataweb.NShape.xml
+C:\ProgramData\NVIDIA Corporation\CUDA Samples\v7.5\Arkenstone\Arkenstone\Arkenstone\bin\Debug\Dataweb.NShape.WinFormsUI.xml
+C:\ProgramData\NVIDIA Corporation\CUDA Samples\v7.5\Arkenstone\Arkenstone\Arkenstone\obj\Debug\Arkenstone.csprojResolveAssemblyReference.cache
+C:\ProgramData\NVIDIA Corporation\CUDA Samples\v7.5\Arkenstone\Arkenstone\Arkenstone\obj\Debug\Arkenstone.Form1.resources
+C:\ProgramData\NVIDIA Corporation\CUDA Samples\v7.5\Arkenstone\Arkenstone\Arkenstone\obj\Debug\Arkenstone.Properties.Resources.resources
+C:\ProgramData\NVIDIA Corporation\CUDA Samples\v7.5\Arkenstone\Arkenstone\Arkenstone\obj\Debug\Arkenstone.testForm.resources
+C:\ProgramData\NVIDIA Corporation\CUDA Samples\v7.5\Arkenstone\Arkenstone\Arkenstone\obj\Debug\Arkenstone.csproj.GenerateResource.Cache
+C:\ProgramData\NVIDIA Corporation\CUDA Samples\v7.5\Arkenstone\Arkenstone\Arkenstone\obj\Debug\Arkenstone.Cuda.Cuda.resources
+E:\Яндекс Диск\Учеба\Диплом\Arkenstone-New\Arkenstone\Arkenstone\bin\Debug\Arkenstone.exe.config
+E:\Яндекс Диск\Учеба\Диплом\Arkenstone-New\Arkenstone\Arkenstone\obj\Debug\Arkenstone.exe
+E:\Яндекс Диск\Учеба\Диплом\Arkenstone-New\Arkenstone\Arkenstone\obj\Debug\Arkenstone.pdb

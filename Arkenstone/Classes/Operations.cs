@@ -203,7 +203,7 @@ namespace Arkenstone.Classes
                 new_p.FillStyle = project1.Design.FillStyles.Transparent;
 
                 new_p.Data = b.Data;
-                //new_p.Text = new_p.Data;
+                new_p.Text = new_p.Data;
 
                 new_p.Height = b.Height;
                 new_p.Width = b.Width;
