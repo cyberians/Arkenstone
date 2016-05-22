@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -60,12 +61,21 @@
   <ItemGroup>
     <Compile Include="Classes\ActivationFunction.cs" />
     <Compile Include="Classes\as.cs" />
+    <Compile Include="Classes\Cuda\Pack1.cs" />
+    <Compile Include="Classes\Cuda\Pack2.cs" />
+    <Compile Include="Classes\Cuda\Pack3.cs" />
     <Compile Include="Classes\NetLayer.cs" />
     <Compile Include="Classes\LearningAlgorithm.cs" />
     <Compile Include="Classes\Link.cs" />
     <Compile Include="Classes\Network.cs" />
     <Compile Include="Classes\Neuron.cs" />
     <Compile Include="Classes\Operations.cs" />
+    <Compile Include="Cuda\Cuda.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Cuda\Cuda.Designer.cs">
+      <DependentUpon>Cuda.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -80,6 +90,9 @@
     <Compile Include="testForm.Designer.cs">
       <DependentUpon>testForm.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Cuda\Cuda.resx">
+      <DependentUpon>Cuda.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -91,6 +104,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="testForm.resx">
       <DependentUpon>testForm.cs</DependentUpon>
@@ -107,6 +121,21 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\cuda.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\cuda_mini.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\cuda_art.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\cuda_art_mini.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\transparent.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

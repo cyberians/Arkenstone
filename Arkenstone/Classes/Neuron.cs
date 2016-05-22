@@ -19,23 +19,32 @@ namespace Arkenstone.Classes
         {
             weight = new double[64, 64];
             Random rnd = new Random();
-            threshold = rnd.NextDouble();
+            threshold = rnd.NextDouble(); //1
 
+            
             for (int i = 0; i < 64; i++)
             {
                 for (int j = 0; j < 64; j++)
                 {
-                    weight[i, j] = input[i, j] * (rnd.NextDouble() * (0.004 - 0.001) + 0.001);
+                    weight[i, j] = input[i, j]*(rnd.NextDouble()*0.02); //* (0.004 - 0.001) + 0.001);
                 }
             }
 
             id = count;
-
+            //Form1.to_notepad(weight, Form1.alpha_count);
+            //Form1.alpha_count++;
         }
 
         public Neuron(int count)
         {
             id = count;
+        }
+
+        public Neuron(double sigma, double [,] submit, int ID)
+        {
+            a = sigma;
+            weight = submit;
+            id = ID;
         }
 
         public static double sigmoida(double x)

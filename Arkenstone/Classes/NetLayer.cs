@@ -24,8 +24,9 @@ namespace Arkenstone.Classes
 
         public NetLayer()
         {
-            RecognizedList = new List<double[,]>();
+            Neurons = new List<Neuron>();
             LayerNumber = ID++;
         }
     }
 }
+ 
