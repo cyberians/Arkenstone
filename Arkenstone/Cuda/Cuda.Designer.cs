@@ -38,13 +38,13 @@
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.richTextBox2 = new System.Windows.Forms.RichTextBox();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
-            this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.tabPage2.SuspendLayout();
             this.SuspendLayout();
             // 
             // checkedListBox1
@@ -54,17 +54,16 @@
             this.checkedListBox1.Items.AddRange(new object[] {
             "Работоспособность cuda.dll",
             "Совместимость драйвера",
-            "Совместимость вычислительной способности",
-            "Наличие минимального объема памяти"});
-            this.checkedListBox1.Location = new System.Drawing.Point(7, 117);
+            "Совместимость вычислительной способности"});
+            this.checkedListBox1.Location = new System.Drawing.Point(7, 132);
             this.checkedListBox1.Name = "checkedListBox1";
-            this.checkedListBox1.Size = new System.Drawing.Size(287, 64);
+            this.checkedListBox1.Size = new System.Drawing.Size(287, 49);
             this.checkedListBox1.TabIndex = 1;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(7, 101);
+            this.label1.Location = new System.Drawing.Point(4, 116);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(143, 13);
             this.label1.TabIndex = 2;
@@ -117,7 +116,7 @@
             this.richTextBox1.Location = new System.Drawing.Point(7, 46);
             this.richTextBox1.Name = "richTextBox1";
             this.richTextBox1.ReadOnly = true;
-            this.richTextBox1.Size = new System.Drawing.Size(287, 52);
+            this.richTextBox1.Size = new System.Drawing.Size(287, 67);
             this.richTextBox1.TabIndex = 7;
             this.richTextBox1.Text = "";
             // 
@@ -160,6 +159,16 @@
             this.tabPage1.Text = "Управление";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = global::Arkenstone.Properties.Resources.cuda_art;
+            this.pictureBox1.Location = new System.Drawing.Point(300, 8);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(200, 173);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox1.TabIndex = 0;
+            this.pictureBox1.TabStop = false;
+            // 
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.richTextBox2);
@@ -181,16 +190,6 @@
             this.richTextBox2.TabIndex = 0;
             this.richTextBox2.Text = "---Журнал обработок с использованием CUDA---\n";
             // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Image = global::Arkenstone.Properties.Resources.cuda_art;
-            this.pictureBox1.Location = new System.Drawing.Point(300, 8);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(200, 173);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox1.TabIndex = 0;
-            this.pictureBox1.TabStop = false;
-            // 
             // Cuda
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -207,8 +206,8 @@
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
-            this.tabPage2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.tabPage2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

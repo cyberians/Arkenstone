@@ -29,7 +29,8 @@ namespace Arkenstone
         public bool enable_CUDA;
 
         public int dev_index = -1; // card index for Cuda
-        public int cl_mem; //memory Cuda limit
+        public float cl_mem; //memory Cuda limit
+        public Point cl_txt; //texture Cuda limit
         public Point cl_grd; //grid(X,Y) Cuda limit
 
         public Cuda.Cuda cu;
@@ -370,7 +371,7 @@ namespace Arkenstone
         int outGr = 0;
 
         double limit_out = 1.0;
-        double speed = 3.0;
+        double speed = 2.0;
         double[,] submit;
         double sigma;
 
@@ -493,7 +494,7 @@ namespace Arkenstone
                                 //input_neuron.a = sum > input_neuron.threshold ? 1 : 0;
                                 //input_neuron.a = Neuron.sigmoida(sum - input_neuron.threshold);
 
-                                input_neuron.a = Neuron.ActivationFunction(input_neuron.func_name, sum - input_neuron.threshold, input_neuron.threshold);
+                                input_neuron.a = (float)(Neuron.ActivationFunction(input_neuron.func_name, sum - input_neuron.threshold, input_neuron.threshold));
                             }
                         }
                     }
@@ -510,7 +511,7 @@ namespace Arkenstone
                             //MessageBox.Show(hidLayer.Name);
                             foreach (var hidNeuron in hidLayer.Neurons.Where(hidNeuron => IsLinkedLocal(hidNeuron.id, outNeuron.id)))
                             {
-                                hidNeuron.weight = new double[64, 64];
+                                hidNeuron.weight = new float[64, 64];
                                 double sum = 0;
 
                                 foreach (var input_neuron in from prevLayer in network.Layers.Where(layer => layer.LayerNumber == hidLayer.LayerNumber + 1) from input_neuron in prevLayer.Neurons where IsLinkedLocal(input_neuron.id, hidNeuron.id) select input_neuron)
@@ -528,7 +529,7 @@ namespace Arkenstone
                                 //hidNeuron.a = sum > hidNeuron.threshold ? 1 : 0;
                                 //hidNeuron.a = Neuron.sigmoida(sum - hidNeuron.threshold);
 
-                                hidNeuron.a = Neuron.ActivationFunction(hidNeuron.func_name, sum - hidNeuron.threshold, hidNeuron.threshold);
+                                hidNeuron.a = (float)(Neuron.ActivationFunction(hidNeuron.func_name, sum - hidNeuron.threshold, hidNeuron.threshold));
                             }
                         }
                     }
@@ -541,7 +542,7 @@ namespace Arkenstone
                     if (limit_out - outNeuron.a > 0.01)
                     {
                         double sum = 0;
-                        outNeuron.weight = new double[64, 64];
+                        outNeuron.weight = new float[64, 64];
                         foreach (var hidNeuron in network.Layers[1].Neurons.Where(hidNeuron => IsLinkedLocal(hidNeuron.id, outNeuron.id)))
                         {
                             for (int x = 0; x < 64; x++)
@@ -558,7 +559,7 @@ namespace Arkenstone
                         //outNeuron.a = sum > outNeuron.threshold ? 1 : 0;
                         //outNeuron.a = Neuron.sigmoida(sum - outNeuron.threshold);
 
-                        outNeuron.a = Neuron.ActivationFunction(outNeuron.func_name, sum - outNeuron.threshold, outNeuron.threshold);
+                        outNeuron.a = (float)(Neuron.ActivationFunction(outNeuron.func_name, sum - outNeuron.threshold, outNeuron.threshold));
                     }
                 }
             }
@@ -573,7 +574,7 @@ namespace Arkenstone
         public void calculate_output_layer_errors_new()
         {
             foreach (var neuron in network.Layers[0].Neurons)
-                neuron.error = (limit_out - neuron.a)*neuron.a*(1 - neuron.a);
+                neuron.error = (float)((limit_out - neuron.a) * neuron.a * (1 - neuron.a));
         }
 
 
@@ -596,7 +597,7 @@ namespace Arkenstone
                                 }
                             }
                         }
-                        neuron.error = neuron.a * (1 - neuron.a) * sum;
+                        neuron.error = (float)(neuron.a * (1 - neuron.a) * sum);
                     }
                 }
             }
@@ -621,11 +622,11 @@ namespace Arkenstone
                         for (int y = 0; y < 64; y++)
                         {
                             if (outNeuron.weight[x, y] > 0)
-                                outNeuron.weight[x, y] += hidNeuron.weight[x, y] + speed * outNeuron.error * hidNeuron.a;
+                                outNeuron.weight[x, y] += (float)(hidNeuron.weight[x, y] + speed * outNeuron.error * hidNeuron.a);
                         }
                     }
                 }
-                outNeuron.threshold = outNeuron.threshold - speed * outNeuron.error;
+                outNeuron.threshold = (float)(outNeuron.threshold - speed * outNeuron.error);
             }
         }
 
@@ -647,11 +648,11 @@ namespace Arkenstone
                                     for (var y = 0; y < 64; y++)
                                     {
                                         if (neuron.weight[x, y] > 0)
-                                            neuron.weight[x, y] += prevNeuron.weight[x, y] + speed * neuron.error * prevNeuron.a;
+                                            neuron.weight[x, y] += (float)(prevNeuron.weight[x, y] + speed * neuron.error * prevNeuron.a);
                                     }
                                 }
                             }
-                            neuron.threshold = neuron.threshold - speed * neuron.error;
+                            neuron.threshold = (float)(neuron.threshold - speed * neuron.error);
                         }
                     }
                 }
@@ -669,10 +670,10 @@ namespace Arkenstone
                     for (var y = 0; y < 64; y++)
                     {
                         if (inputNeuron.weight[x, y] > 0)
-                            inputNeuron.weight[x, y] = inputNeuron.weight[x, y] + speed * inputNeuron.error;
+                            inputNeuron.weight[x, y] = (float)(inputNeuron.weight[x, y] + speed * inputNeuron.error);
                     }
                 }
-                inputNeuron.threshold = inputNeuron.threshold - speed * inputNeuron.error;
+                inputNeuron.threshold = (float)(inputNeuron.threshold - speed * inputNeuron.error);
             }
         }
 

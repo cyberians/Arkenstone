@@ -9,26 +9,26 @@ namespace Arkenstone.Classes
 {
     public class Neuron
     {
-        public double[,] weight; //весовые коэффициенты
-        public double threshold; //Порог
-        public double a; //сигнал на выходе нейрона
-        public double error; //значение ошибки
+        public float[,] weight; //весовые коэффициенты
+        public float threshold; //Порог
+        public float a; //сигнал на выходе нейрона
+        public float error; //значение ошибки
         public int id; // id нейрона
         public string func_name; //имя функции активации
 
 
         public Neuron(double[,] input, int count, string func)
         {
-            weight = new double[64, 64];
+            weight = new float[64, 64];
             Random rnd = new Random();
-            threshold = rnd.NextDouble(); //1
+            threshold = (float)rnd.NextDouble(); //1
 
             
             for (int i = 0; i < 64; i++)
             {
                 for (int j = 0; j < 64; j++)
                 {
-                    weight[i, j] = input[i, j]*(rnd.NextDouble()*0.02); //* (0.004 - 0.001) + 0.001);
+                    weight[i, j] = (float)(input[i, j]*(rnd.NextDouble()* (0.004 - 0.001) + 0.001));
                 }
             }
 
@@ -46,8 +46,11 @@ namespace Arkenstone.Classes
 
         public Neuron(double sigma, double [,] submit, int ID)
         {
-            a = sigma;
-            weight = submit;
+            a = (float)sigma;
+            weight = new float[submit.GetLength(0), submit.GetLength(1)];
+            for (int i = 0; i < submit.GetLength(0); i++)
+                for (int j = 0; j < submit.GetLength(1); j++)
+                    weight[i, j] = (float)submit[i, j];
             id = ID;
         }
 
@@ -60,12 +63,12 @@ namespace Arkenstone.Classes
                 {
                     return sigmoida(x);
                 }
-                    break;
+                   
                 case "heavyside":
                 {
                     return heavyside(x);
                 }
-                    break;
+                   
             }
             return 0;
         }
