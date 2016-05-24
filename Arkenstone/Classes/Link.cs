@@ -10,7 +10,7 @@ namespace Arkenstone.Classes
     {
         public int id_out;
         public int id_in;
-
+        //comment
         public Link(int idOut, int idIn)
         {
             id_out = idOut;
