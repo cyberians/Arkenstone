@@ -13,31 +13,31 @@ namespace Arkenstone.Cuda
 {
     public unsafe partial class Cuda : Form
     {
-        [DllImport("96cores.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("cudArk.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool check_connection();
 
-        [DllImport("96cores.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("cudArk.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern int check_driver();
 
-        [DllImport("96cores.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("cudArk.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern int check_capability();
 
-        [DllImport("96cores.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("cudArk.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern int check_memory();
 
-        [DllImport("96cores.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("cudArk.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern int dev_count();
 
-        [DllImport("96cores.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("cudArk.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern char* dev_name(int index);
 
-        [DllImport("96cores.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("cudArk.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern float mem_total(int dev);
 
-        [DllImport("96cores.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("cudArk.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern int txt(int dev, int dim);
 
-        [DllImport("96cores.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("cudArk.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern int grd(int dev, int dim);
 
 

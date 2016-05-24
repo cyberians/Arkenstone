@@ -23,7 +23,7 @@ namespace Arkenstone
 {
     public partial class Form1 : Form
     {
-        [DllImport("96cores.dll", CallingConvention = CallingConvention.Cdecl)] //cuda
+        [DllImport("cudArk.dll", CallingConvention = CallingConvention.Cdecl)] //cuda
         public static extern bool check_connection();//cuda
 
         public bool enable_CUDA;
@@ -442,7 +442,26 @@ namespace Arkenstone
 
         public unsafe void run_network_new()
         {
-            if (!enable_CUDA)
+             bool allow_cuda = true;
+            if (enable_CUDA)
+            {
+                List<Pack1> queue = new List<Pack1>();
+                for (int i = 0; i < network.Layers[0].Neurons.Count; i++)
+                {
+                    queue.Add(new Pack1(ref network, ref links, ref picSize, i));
+                    if (queue[i].dev_mem > cl_mem &&
+                        cl_txt.X < queue[i].ids.Count() && cl_txt.Y < picSize.Width * picSize.Height
+                        )
+                        allow_cuda = false;
+                }
+                if (allow_cuda)
+                {
+                    //dll working
+                }
+            }
+
+            
+            if(!enable_CUDA && !enable_CUDA)
             {
                 //первый скрытый слой
                 foreach (var outNeuron in network.Layers[0].Neurons)
