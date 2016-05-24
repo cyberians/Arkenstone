@@ -34,8 +34,8 @@ namespace Arkenstone.Classes.Cuda
         public float[] t;
         public float* p_t;
 
-        public float** weights;
-
+        public float **weights;
+        public List<float[,]> w = new List<float[,]>();
 
         public int dev_mem;
         public Pack1(ref Network N, ref List<Link> L, ref Size picSize, int n)
@@ -94,7 +94,7 @@ namespace Arkenstone.Classes.Cuda
             List<int> l_in = new List<int>();
             List<int> l_out = new List<int>();
             List<int> lrs = new List<int>();
-            List<float[,]> w = new List<float[,]>();
+            //List<float[,]> w = new List<float[,]>();
             List<int> acts = new List<int>();
             List<float> a_values = new List<float>();
             List<float> t_values = new List<float>();
@@ -139,20 +139,7 @@ namespace Arkenstone.Classes.Cuda
             t = t_values.ToArray();
             
 
-            int neurons = w.Count;
-            float*[] X = new float*[neurons];
-            for (int i = 0; i < neurons; i++)
-            {
-                fixed (float* p = w[i])
-                {
-                    X[i] = p;
-                }
-            }
-
-            fixed (float** weights = X)
-            {
-                this.weights = weights;
-            }
+         
 
             return list.ToArray();
         }

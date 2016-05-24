@@ -27,7 +27,7 @@ namespace Arkenstone
         public static extern bool check_connection();//cuda
 
         [DllImport("cudArk.dll", CallingConvention = CallingConvention.Cdecl)] //cuda
-        public static extern void run_network_new(int dev, int width, int height, int neurons, int* p_ids, int* p_links_in, int* p_links_out, int* p_layers, int* p_facts, float* p_a, float* p_t, float** weights);//cuda
+        public static extern void run_network_new(int dev, int width, int height, int neurons, int* p_ids, int* p_links_in, int* p_links_out, int* p_layers, int* p_facts, float* p_a, float* p_t, float **weights);//cuda
 
 
 
@@ -454,11 +454,14 @@ namespace Arkenstone
                 List<Pack1> queue = new List<Pack1>();
                 for (int i = 0; i < network.Layers[0].Neurons.Count; i++)
                 {
-                    queue.Add(new Pack1(ref network, ref links, ref picSize, i));
-                    if (queue[i].dev_mem > cl_mem &&
-                        cl_txt.X < queue[i].ids.Count() && cl_txt.Y < picSize.Width * picSize.Height
-                        )
-                        allow_cuda = false;
+                    if (limit_out - network.Layers[0].Neurons[i].a > 0.01)
+                    {
+                        queue.Add(new Pack1(ref network, ref links, ref picSize, i));
+                        if (queue[i].dev_mem > cl_mem &&
+                            cl_txt.X < queue[i].ids.Count() && cl_txt.Y < picSize.Width * picSize.Height
+                            )
+                            allow_cuda = false;
+                    }
                 }
                 if (allow_cuda)
                 {
@@ -467,8 +470,35 @@ namespace Arkenstone
                         cu.richTextBox2.Text += '\n' +"Прогон сети:"+'\n';
                         foreach (Pack1 pack in queue)
                         {
-                            run_network_new(dev_index, picSize.Width, picSize.Height, pack.ids.Count(), pack.p_ids, pack.p_links_in, pack.p_links_out, pack.p_layers, pack.p_facts, pack.p_a, pack.p_t, pack.weights);
-                            cu.richTextBox2.Text += " обработано нейронов: " + pack.ids.Count() + ", памяти затрачено: " + pack.dev_mem + '\n';
+                            //MessageBox.Show(pack.ids.Count().ToString());
+                           // MessageBox.Show(Convert.ToString(*(*(pack.weights + pack.ids.Count()-1) + 4095))); //0 is neuron index as in ids
+
+
+                            int neurons = pack.w.Count;
+                            float*[] X = new float*[neurons];
+                            for (int i = 0; i < neurons; i++)
+                            {
+                                fixed (float* p = pack.w[i])
+                                {
+                                    X[i] = p;
+                                }
+                            }
+
+                            fixed (float **weights = X)
+                            {
+                                run_network_new(dev_index, picSize.Width, picSize.Height, pack.ids.Count(), pack.p_ids, pack.p_links_in, pack.p_links_out, pack.p_layers, pack.p_facts, pack.p_a, pack.p_t, weights);
+                            }
+
+
+                            
+                            
+                            //run_network_new(dev_index, picSize.Width, picSize.Height, pack.ids.Count(), pack.p_ids, pack.p_links_in, pack.p_links_out, pack.p_layers, pack.p_facts, pack.p_a, pack.p_t, pack.weights);
+                            
+                            for (int j = 0; j < pack.ids.Count(); j++)
+                            {
+                             //   network.Layers[pack.layers[j]].Neurons.Where(n => n.id == pack.ids[j]).First().a = pack.p_a[j];
+                            }
+                            cu.richTextBox2.Text += " обработано нейронов: " + pack.ids.Count() + ", памяти выделено: " + pack.dev_mem + '\n';
                         }
                     }
                     catch(Exception ex)
@@ -1096,7 +1126,7 @@ namespace Arkenstone
                     update_output_weights();
                     update_hidden_weights();
                     update_FIRST_hidden_layer_weights();
-
+                    //
                     iteration_count++;
                     
                     backgroundWorker1.ReportProgress(iteration_count/2);
