@@ -28,6 +28,9 @@ namespace Arkenstone.Classes.Cuda
         public int[] facts;
         public int* p_facts;
 
+        public float[] a;
+        public float* p_a;
+
         public float** weights;
 
 
@@ -42,28 +45,6 @@ namespace Arkenstone.Classes.Cuda
                 + (ids.Count() * sizeof(int))
                 + (layers.Count() * sizeof(int))
                 ;
-
-            //    float[,] A = new float[,]{
-            //{5, 10},
-            //{20, 30},};
-            //    float[,] B = new float[,]{
-            //{0, 11},
-            //{22, 33},};
-
-            //    float*[] X = new float*[2];
-            //    fixed (float* p = A)
-            //    {
-            //        X[0] = p;
-            //    }
-            //    fixed (float* p = B)
-            //    {
-            //        X[1] = p;
-            //    }
-
-            //    fixed (float **weights = X)
-            //    {
-            //        this.weights = weights;
-            //    }
 
 
 
@@ -87,6 +68,11 @@ namespace Arkenstone.Classes.Cuda
                 this.p_layers = p_layers;
             }
 
+            fixed (float* p_a = a)
+            {
+                this.p_a = p_a;
+            }
+
             fixed (int* p_facts = facts)
             {
                 this.p_facts = p_facts;
@@ -102,13 +88,14 @@ namespace Arkenstone.Classes.Cuda
             List<int> lrs = new List<int>();
             List<float[,]> w = new List<float[,]>();
             List<int> acts = new List<int>();
+            List<float> a_values = new List<float>();
 
 
             list.Add(net.Layers[0].Neurons[number].id);
             lrs.Add(net.Layers[0].LayerNumber);
             w.Add(net.Layers[0].Neurons[number].weight);
             acts.Add(net.Layers[0].Neurons[number].func_idx);
-
+            a_values.Add(net.Layers[0].Neurons[number].a);
 
             foreach (var layer in net.Layers.Where(l => l.Name != "Output"))
             {
@@ -127,6 +114,7 @@ namespace Arkenstone.Classes.Cuda
                             w.Add(neuron.weight);
 
                             acts.Add(neuron.func_idx);
+                            a_values.Add(neuron.a);
                         }
                     }
                 }
@@ -136,6 +124,7 @@ namespace Arkenstone.Classes.Cuda
             links_in = l_in.ToArray();
             layers = lrs.ToArray();
             facts = acts.ToArray();
+            a = a_values.ToArray();
             
 
             int neurons = w.Count;
