@@ -27,7 +27,7 @@ namespace Arkenstone
         public static extern bool check_connection();//cuda
 
         [DllImport("cudArk.dll", CallingConvention = CallingConvention.Cdecl)] //cuda
-        public static extern void run_network_new(int dev, int weight, int height, int neurons, int* p_ids, int* p_links_in, int* p_links_out, int* p_layers, int* p_facts, float** weights);//cuda
+        public static extern void run_network_new(int dev, int width, int height, int neurons, int* p_ids, int* p_links_in, int* p_links_out, int* p_layers, int* p_facts, float* p_a, float* p_t, float** weights);//cuda
 
 
 
@@ -467,7 +467,7 @@ namespace Arkenstone
                         cu.richTextBox2.Text += '\n' +"Прогон сети:"+'\n';
                         foreach (Pack1 pack in queue)
                         {
-                            run_network_new(dev_index, picSize.Width, picSize.Height, pack.ids.Count(), pack.p_ids, pack.p_links_in, pack.p_links_out, pack.p_layers, pack.p_facts, pack.weights);
+                            run_network_new(dev_index, picSize.Width, picSize.Height, pack.ids.Count(), pack.p_ids, pack.p_links_in, pack.p_links_out, pack.p_layers, pack.p_facts, pack.p_a, pack.p_t, pack.weights);
                             cu.richTextBox2.Text += " обработано нейронов: " + pack.ids.Count() + ", памяти затрачено: " + pack.dev_mem + '\n';
                         }
                     }

@@ -31,6 +31,9 @@ namespace Arkenstone.Classes.Cuda
         public float[] a;
         public float* p_a;
 
+        public float[] t;
+        public float* p_t;
+
         public float** weights;
 
 
@@ -73,6 +76,11 @@ namespace Arkenstone.Classes.Cuda
                 this.p_a = p_a;
             }
 
+            fixed (float* p_t = t)
+            {
+                this.p_t = p_t;
+            }
+
             fixed (int* p_facts = facts)
             {
                 this.p_facts = p_facts;
@@ -89,6 +97,7 @@ namespace Arkenstone.Classes.Cuda
             List<float[,]> w = new List<float[,]>();
             List<int> acts = new List<int>();
             List<float> a_values = new List<float>();
+            List<float> t_values = new List<float>();
 
 
             list.Add(net.Layers[0].Neurons[number].id);
@@ -96,6 +105,7 @@ namespace Arkenstone.Classes.Cuda
             w.Add(net.Layers[0].Neurons[number].weight);
             acts.Add(net.Layers[0].Neurons[number].func_idx);
             a_values.Add(net.Layers[0].Neurons[number].a);
+            t_values.Add(net.Layers[0].Neurons[number].threshold);
 
             foreach (var layer in net.Layers.Where(l => l.Name != "Output"))
             {
@@ -115,6 +125,7 @@ namespace Arkenstone.Classes.Cuda
 
                             acts.Add(neuron.func_idx);
                             a_values.Add(neuron.a);
+                            t_values.Add(neuron.threshold);
                         }
                     }
                 }
@@ -125,6 +136,7 @@ namespace Arkenstone.Classes.Cuda
             layers = lrs.ToArray();
             facts = acts.ToArray();
             a = a_values.ToArray();
+            t = t_values.ToArray();
             
 
             int neurons = w.Count;
