@@ -15,6 +15,7 @@ namespace Arkenstone.Classes
         public float error; //значение ошибки
         public int id; // id нейрона
         public string func_name; //имя функции активации
+        public int func_idx;
 
 
         public Neuron(double[,] input, int count, string func)
@@ -33,6 +34,9 @@ namespace Arkenstone.Classes
             }
 
             func_name = func;
+
+            if (func == "sigmoida") { func_idx = 0; }
+            if (func == "heavyside") { func_idx = 1; }
 
             id = count;
             //Form1.to_notepad(weight, Form1.alpha_count);
