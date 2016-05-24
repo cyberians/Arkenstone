@@ -53,18 +53,8 @@ namespace Arkenstone
 
         Bitmap bm_test = new Bitmap(64, 64);
 
-        List<Neuron> hid1_layer = new List<Neuron>();
-        List<Neuron> hid2_layer = new List<Neuron>();
-        List<Neuron> output_layer = new List<Neuron>();
-
         List<char> alphabet = new List<char>();
 
-        List<double[,]> recognize_hid1 = new List<double[,]>();
-        List<double[,]> recognize_hid2 = new List<double[,]>();
-        List<double[,]> recognize_output = new List<double[,]>();
-
-        List<double> recognize_sigm_hid1 = new List<double>();
-        List<double> recognize_sigm_hid2 = new List<double>();
         List<double> recognize_sigm_out = new List<double>();
 
         List<double[,]> input_signal = new List<double[,]>();
@@ -74,15 +64,9 @@ namespace Arkenstone
 
         double[,] enter = new double[64, 64];
 
-        List<Bitmap> visPriznak = new List<Bitmap>();
-        List<Bitmap> visGrPriznak = new List<Bitmap>();
-        List<Bitmap> visOut = new List<Bitmap>();
+
 
         List<int> inputList = new List<int>();
-
-        List<Link> layer1_connect = new List<Link>();
-        List<Link> layer2_connect = new List<Link>();
-        List<Link> layer3_connect = new List<Link>();
 
         
 
@@ -413,8 +397,6 @@ namespace Arkenstone
                     
                     test += massive[i, j].ToString() + Environment.NewLine;
 
-                    //string createText = "Hello and Welcome" + Environment.NewLine;
-                    //
                 }
             }
             File.WriteAllText(word_file, test + Environment.NewLine);
@@ -509,7 +491,9 @@ namespace Arkenstone
                                     }
                                 }
                                 //input_neuron.a = sum > input_neuron.threshold ? 1 : 0;
-                                input_neuron.a = Neuron.sigmoida(sum - input_neuron.threshold);
+                                //input_neuron.a = Neuron.sigmoida(sum - input_neuron.threshold);
+
+                                input_neuron.a = Neuron.ActivationFunction(input_neuron.func_name, sum - input_neuron.threshold, input_neuron.threshold);
                             }
                         }
                     }
@@ -542,7 +526,9 @@ namespace Arkenstone
                                     //to_form(hidNeuron.weight);
                                 }
                                 //hidNeuron.a = sum > hidNeuron.threshold ? 1 : 0;
-                                hidNeuron.a = Neuron.sigmoida(sum - hidNeuron.threshold);
+                                //hidNeuron.a = Neuron.sigmoida(sum - hidNeuron.threshold);
+
+                                hidNeuron.a = Neuron.ActivationFunction(hidNeuron.func_name, sum - hidNeuron.threshold, hidNeuron.threshold);
                             }
                         }
                     }
@@ -570,7 +556,9 @@ namespace Arkenstone
                             //to_form(outNeuron.weight);
                         }
                         //outNeuron.a = sum > outNeuron.threshold ? 1 : 0;
-                        outNeuron.a = Neuron.sigmoida(sum - outNeuron.threshold);
+                        //outNeuron.a = Neuron.sigmoida(sum - outNeuron.threshold);
+
+                        outNeuron.a = Neuron.ActivationFunction(outNeuron.func_name, sum - outNeuron.threshold, outNeuron.threshold);
                     }
                 }
             }
@@ -820,7 +808,18 @@ namespace Arkenstone
             RectangleBase roundedBoxShape = (RectangleBase) project1.ShapeTypes["Box"].CreateInstance();
             roundedBoxShape.FillStyle = project1.Design.FillStyles.Black;
             roundedBoxShape.LineStyle = project1.Design.LineStyles.Thick;
+            roundedBoxShape.Width = 64;
+            roundedBoxShape.Height = 64;
+            roundedBoxShape.Tag = "sigmoida";
             CreateTemplateAndTool("Сигмоида", category, roundedBoxShape);
+
+            RectangleBase roundedBoxShape2 = (RectangleBase)project1.ShapeTypes["Box"].CreateInstance();
+            roundedBoxShape2.FillStyle = project1.Design.FillStyles.Black;
+            roundedBoxShape2.LineStyle = project1.Design.LineStyles.Thick;
+            roundedBoxShape2.Width = 64;
+            roundedBoxShape2.Height = 64;
+            roundedBoxShape2.Tag = "heavyside";
+            CreateTemplateAndTool("Хэвисайда", category, roundedBoxShape2);
 
             category = "Связи";
             Polyline roundedBoxline = (Polyline) project1.ShapeTypes["Polyline"].CreateInstance();
@@ -830,6 +829,8 @@ namespace Arkenstone
 
         private void Form1_Load(object sender, EventArgs e)
         {
+
+            comboBox1.SelectedIndex = 0;
             char[] Arr = Enumerable.Range(0, 32).Select((int x, int i) => (char) (1040 + i)).ToArray<char>();
             char[] arr = Enumerable.Range(0, 32).Select((int x, int i) => (char) (1072 + i)).ToArray<char>();
             for (int j = 0; j < Arr.Length; j++)
@@ -949,8 +950,7 @@ namespace Arkenstone
         private void pictureBox1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             Operations.GetBinaryPic(bm3, input);
-            //hid1_layer.Add(new Neuron(input, count));
-            //visPriznak.Add(bm3);
+            
             Picture box = (Picture) project1.ShapeTypes["Picture"].CreateInstance();
             box.Image = new NamedImage{ Image = bm3 };
 
@@ -960,6 +960,9 @@ namespace Arkenstone
             box.Text = box.Data;
             box.X = StartPoint(box).X;
             box.Y = StartPoint(box).Y;
+            box.Tag = comboBox1.SelectedItem;
+
+
             diagram.Shapes.Add(box);
             cachedRepository1.Insert((Shape) box, diagram);
 
@@ -1181,11 +1184,8 @@ namespace Arkenstone
 
                     if (!containFirst)
                     {
-                        list.Add(new Neuron(Operations.GetBinaryPic((Bitmap)Operations.newDraw(s), input), Convert.ToInt32(s.Data)));
-                      
+                        list.Add(new Neuron(Operations.GetBinaryPic((Bitmap)Operations.newDraw(s), input), Convert.ToInt32(s.Data), s.Tag.ToString()));
                     }
-                        
-                    
                         
                 }
             }
@@ -1196,7 +1196,14 @@ namespace Arkenstone
         {
             var outputLayer = pNetwork.Layers.First(layer => layer.Name == "Output");
 
-            var hiddenList = (from s in pDiagram.Shapes from n in outputLayer.Neurons where n.id == Convert.ToInt32(s.Data) from t in s.GetConnectionInfos(ControlPointId.Any, null) select new Neuron(Operations.GetBinaryPic((Bitmap) Operations.newDraw(pDiagram.Shapes.First(shape => shape.Data == t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data)), input), Convert.ToInt32(t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data))).ToList();
+            var hiddenList = new List<Neuron>();
+            foreach (Shape s in pDiagram.Shapes)
+                foreach (var n in outputLayer.Neurons)
+                {
+                    if (n.id == Convert.ToInt32(s.Data))
+                        foreach (var t in s.GetConnectionInfos(ControlPointId.Any, null))
+                            hiddenList.Add(new Neuron(Operations.GetBinaryPic((Bitmap)Operations.newDraw(pDiagram.Shapes.First(shape => shape.Data == t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data)), input), Convert.ToInt32(t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data), t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Tag.ToString()));
+                }
 
             pNetwork.Layers.Add(new NetLayer("Hidden", hiddenList));
 
@@ -1206,7 +1213,19 @@ namespace Arkenstone
 
             while (!IsFirstLayer(pDiagram, hiddenLayer))
             {
-                hiddenList = (from s in pDiagram.Shapes from n in hiddenLayer.Neurons where n.id == Convert.ToInt32(s.Data) let shi = s.GetConnectionInfos(ControlPointId.Any, null) from t in shi where t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data != s.Data select new Neuron(Operations.GetBinaryPic((Bitmap) Operations.newDraw(pDiagram.Shapes.First(shape => shape.Data == t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data)), input), Convert.ToInt32(t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data))).ToList();
+                hiddenList = new List<Neuron>();
+                foreach (Shape s in pDiagram.Shapes)
+                    foreach (var n in hiddenLayer.Neurons)
+                    {
+                        if (n.id == Convert.ToInt32(s.Data))
+                        {
+                            IEnumerable<ShapeConnectionInfo> shi = s.GetConnectionInfos(ControlPointId.Any, null);
+                            foreach (var t in shi)
+                            {
+                                if (t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data != s.Data) hiddenList.Add(new Neuron(Operations.GetBinaryPic((Bitmap) Operations.newDraw(pDiagram.Shapes.First(shape => shape.Data == t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data)), input), Convert.ToInt32(t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Data), t.OtherShape.GetConnectionInfo(ControlPointId.FirstVertex, null).OtherShape.Tag.ToString()));
+                            }
+                        }
+                    }
 
                 pNetwork.Layers.Add(new NetLayer(lay_count + "-Hidden", hiddenList));
 
@@ -1247,10 +1266,7 @@ namespace Arkenstone
             CreateLinksBeetwenNeurons(firstLayerNeurons, hiddenLayerNeurons);
         }
 
-        private void button6_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show(IsLinkedLocal(Convert.ToInt32(textBox1.Text), Convert.ToInt32(textBox2.Text)) ? "Да" : "Нет");
-        }
+        
 
         List<Image> loadedImages = new List<Image>();
         private void button7_Click(object sender, EventArgs e)
@@ -1317,6 +1333,7 @@ namespace Arkenstone
                             box.Data = count.ToString();
                             box.X = 250;
                             box.Y = y;
+                            box.Tag = "sigmoida";
                             diagram.Shapes.Add(box);
                             cachedRepository1.Insert((Shape)box, diagram);
 
@@ -1335,7 +1352,7 @@ namespace Arkenstone
                             arrow.Connect(ControlPointId.FirstVertex, shape, ControlPointId.Reference);
                             arrow.Connect(ControlPointId.LastVertex, box, ControlPointId.Reference);
 
-                           
+                            
 
                             Operations.ConnectShapesAutomatically(display1, shape, ref box, project1, diagram, cachedRepository1, arrow);
                             hiddenLayerNeurons.Add(box);
@@ -1377,6 +1394,7 @@ namespace Arkenstone
                             box2.Data = count.ToString();
                             box2.X = 450;
                             box2.Y = y2;
+                            box2.Tag = "sigmoida";
                             diagram.Shapes.Add(box2);
                             cachedRepository1.Insert((Shape)box2, diagram);
 
@@ -1476,6 +1494,8 @@ namespace Arkenstone
                     box.Text = box.Data;
                     box.X = StartPoint(box).X;
                     box.Y = StartPoint(box).Y;
+                    box.Tag = "sigmoida";
+
                     diagram.Shapes.Add(box);
                     cachedRepository1.Insert((Shape)box, diagram);
 

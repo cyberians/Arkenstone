@@ -161,6 +161,7 @@ namespace Arkenstone.Classes
 
                 new_p.X = b.X;
                 new_p.Y = b.Y;
+                new_p.Tag = b.Tag;
 
                 diagram.Shapes.Add(new_p);
                 cachedRepository1.Insert((Shape) new_p, diagram);
@@ -210,6 +211,8 @@ namespace Arkenstone.Classes
 
                 new_p.X = b.X;
                 new_p.Y = b.Y;
+
+                new_p.Tag = b.Tag;
 
                 diagram.Shapes.Add(new_p);
                 cachedRepository1.Insert((Shape)new_p, diagram);
