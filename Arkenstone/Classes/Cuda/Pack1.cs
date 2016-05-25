@@ -8,7 +8,7 @@ using Arkenstone.Classes;
 
 namespace Arkenstone.Classes.Cuda
 {
-    unsafe class Pack1
+    unsafe public class Pack1
     {//run_network_new
         public int[] links_in;
         public int* p_links_in;
@@ -51,44 +51,46 @@ namespace Arkenstone.Classes.Cuda
 
 
 
-            fixed (int* p_links_in = links_in)
+            fixed (int* pp_links_in = links_in)
             {
-                this.p_links_in = p_links_in;
+                this.p_links_in = pp_links_in;
             }
 
-            fixed (int* p_links_out = links_out)
+            fixed (int* pp_links_out = links_out)
             {
-                this.p_links_out = p_links_out;
+                this.p_links_out = pp_links_out;
             }
 
-            fixed (int* p_ids = ids)
+            fixed (int* pp_ids = ids)
             {
-                this.p_ids = p_ids;
+                this.p_ids = pp_ids;
             }
 
-            fixed (int* p_layers = layers)
+            fixed (int* pp_layers = layers)
             {
-                this.p_layers = p_layers;
+                this.p_layers = pp_layers;
             }
 
-            fixed (float* p_a = a)
+            fixed (float* pp_a = a)
             {
-                this.p_a = p_a;
+                this.p_a = pp_a;
             }
 
-            fixed (float* p_t = t)
+            fixed (float* pp_t = t)
             {
-                this.p_t = p_t;
+                this.p_t = pp_t;
             }
 
-            fixed (int* p_facts = facts)
+            fixed (int* pp_facts = facts)
             {
-                this.p_facts = p_facts;
+                this.p_facts = pp_facts;
             }
+
+            
         }
 
 
-        int[] IDS(ref Network net, ref List<Link> L, ref int number)
+        public int[] IDS(ref Network net, ref List<Link> L, ref int number)
         {
             List<int> list = new List<int>();
             List<int> l_in = new List<int>();

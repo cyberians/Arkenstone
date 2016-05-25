@@ -41,6 +41,11 @@ namespace Arkenstone.Cuda
         public static extern int grd(int dev, int dim);
 
 
+        [DllImport("cudArk.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void testmethod(float* f);
+
+
+
         Form1 parentForm;
         public Cuda(Form1 _parentForm)
         {
@@ -146,6 +151,17 @@ namespace Arkenstone.Cuda
                 parentForm.dev_index = comboBox1.SelectedIndex;
             }
             check();
+
+
+            //float[] x = new float[2];
+            //x[0] = 1;
+            //x[1] = 2;
+            //fixed(float* f = x)
+            //{
+            //    testmethod(f);
+            //}
+
+            //MessageBox.Show(x[0].ToString()+'\n'+x[1].ToString());
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)

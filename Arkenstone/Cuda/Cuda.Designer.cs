@@ -186,7 +186,7 @@
             this.richTextBox2.Location = new System.Drawing.Point(-2, -2);
             this.richTextBox2.Name = "richTextBox2";
             this.richTextBox2.ReadOnly = true;
-            this.richTextBox2.Size = new System.Drawing.Size(511, 263);
+            this.richTextBox2.Size = new System.Drawing.Size(509, 263);
             this.richTextBox2.TabIndex = 0;
             this.richTextBox2.Text = "---Журнал обработок с использованием CUDA---\n";
             // 
