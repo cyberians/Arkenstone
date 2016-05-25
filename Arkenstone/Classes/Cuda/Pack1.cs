@@ -47,6 +47,9 @@ namespace Arkenstone.Classes.Cuda
                 + (links_out.Count() * sizeof(int))
                 + (ids.Count() * sizeof(int))
                 + (layers.Count() * sizeof(int))
+                + (facts.Count() * sizeof(int))
+                + (a.Count() * sizeof(int))
+                + (t.Count() * sizeof(int)) + 4*3
                 ;
 
 

@@ -30,9 +30,15 @@ namespace Arkenstone
         public static extern void run_network_new(int dev, int width, int height, int neurons, int* p_ids, int* p_links_in, int* p_links_out, int* p_layers, int* p_facts, float* p_a, float* p_t, float **weights);//cuda
 
         [DllImport("cudArk.dll", CallingConvention = CallingConvention.Cdecl)] //cuda
+        public static extern void calculate_hidden_layers_errors(int dev, int width, int height, int neurons, int links, int current, int* p_ids, int* p_links_in, int* p_links_out, int* p_layers, float* p_a, float* p_e, float** weights);//cuda
+
+        
+        
+        [DllImport("cudArk.dll", CallingConvention = CallingConvention.Cdecl)] //cuda
         public static extern void mem_clear(int dev);//cuda
 
         public int s_transactions = 0;
+        string cutext = "";
 
 
         public bool enable_CUDA;
@@ -380,7 +386,7 @@ namespace Arkenstone
         int outGr = 0;
 
         double limit_out = 1.0;
-        double speed = 2.0;
+        double speed = 1.8;
         double[,] submit;
         double sigma;
 
@@ -451,8 +457,10 @@ namespace Arkenstone
 
         public unsafe void run_network_new()
         {
-             bool allow_cuda = true;
-            if (enable_CUDA)
+            bool allow_cuda = true;
+            if (!enable_CUDA)
+                allow_cuda = false;
+            else
             {
                 List<Pack1> queue = new List<Pack1>();
                 for (int i = 0; i < network.Layers[0].Neurons.Count; i++)
@@ -462,21 +470,20 @@ namespace Arkenstone
                         queue.Add(new Pack1(ref network, ref links, ref picSize, i));
                         if (queue.Last().dev_mem > cl_mem &&
                             cl_txt.Y < queue.Last().ids.Count() && cl_txt.X < picSize.Width * picSize.Height
-                            )
-                            allow_cuda = false;
+                            ) { allow_cuda = false; }
                     }
                 }
                 if (allow_cuda)
                 {
                     try
                     {
-                        //cu.richTextBox2.Text += '\n' +"Прогон сети:"+'\n';
+                        cutext += '\n' +"Прогон сети:"+'\n';
                         foreach (Pack1 pack in queue)
                         {
-                           // MessageBox.Show(pack.ids.Count().ToString());
+                            // MessageBox.Show(pack.ids.Count().ToString());
 
                             //MessageBox.Show(Convert.ToString(*(*(pack.weights + pack.ids.Count()-1) + 4095))); //0 is neuron index as in ids
-                           // MessageBox.Show(Convert.ToString(*(*(pack.weights + 4095) + pack.ids.Count() - 1)));
+                            // MessageBox.Show(Convert.ToString(*(*(pack.weights + 4095) + pack.ids.Count() - 1)));
 
                             int neurons = pack.w.Count;
                             float*[] X = new float*[neurons];
@@ -488,37 +495,30 @@ namespace Arkenstone
                                 }
                             }
 
-                            fixed (float **weights = X)
+                            fixed (float** weights = X)
                             {
-                               // MessageBox.Show(Convert.ToString(*(*(weights + pack.ids.Count() - 1) + 4095)));
+                                // MessageBox.Show(Convert.ToString(*(*(weights + pack.ids.Count() - 1) + 4095)));
                                 run_network_new(dev_index, picSize.Width, picSize.Height, pack.ids.Count(), pack.p_ids, pack.p_links_in, pack.p_links_out, pack.p_layers, pack.p_facts, pack.p_a, pack.p_t, weights);
                                 s_transactions += 1;
-                                cu.richTextBox2.Text += " обработано нейронов: " + pack.ids.Count() + ", памяти выделено: " + pack.dev_mem + '\n';
+                                cutext += " обработано нейронов: " + pack.ids.Count() + ", памяти выделено: " + pack.dev_mem + '\n';
+
 
                                 for (int j = 0; j < pack.ids.Count(); j++)
                                 {
                                     network.Layers[pack.layers[j]].Neurons.Where(n => n.id == pack.ids[j]).First().a = pack.p_a[j];
                                 }
                             }
-                            
-                            //run_network_new(dev_index, picSize.Width, picSize.Height, pack.ids.Count(), pack.p_ids, pack.p_links_in, pack.p_links_out, pack.p_layers, pack.p_facts, pack.p_a, pack.p_t, pack.weights);
-                            
-                            for (int j = 0; j < pack.ids.Count(); j++)
-                            {
-                             //   network.Layers[pack.layers[j]].Neurons.Where(n => n.id == pack.ids[j]).First().a = pack.p_a[j];
-                            }
-                            
                         }
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         MessageBox.Show(ex.Message);
                     }
                 }
             }
 
-            
-            if(!enable_CUDA && !enable_CUDA)
+
+            if (!allow_cuda)
             {
                 //первый скрытый слой
                 foreach (var outNeuron in network.Layers[0].Neurons)
@@ -639,12 +639,6 @@ namespace Arkenstone
                     }
                 }
             }
-            else
-            {
-                //Pack1 p1 = new Pack1(ref network, ref links, ref picSize, 1);
-                //int* links_in;
-                //int* links_out;
-            }
         }
 
         public void calculate_output_layer_errors_new()
@@ -656,7 +650,88 @@ namespace Arkenstone
 
         public void calculate_hidden_layers_errors()
         {
-            if (enable_CUDA)
+            bool allow_cuda = true;
+            if (!enable_CUDA)
+                allow_cuda = false;
+            else
+            {
+                List<Pack2> queue = new List<Pack2>();
+                for (int i = 1; i < network.Layers.Count - 1; i++)
+                {
+                    if (limit_out - network.Layers[0].Neurons[i].a > 0.01)
+                    {
+                        queue.Add(new Pack2(ref network, ref links, ref picSize, i));
+                        if (queue.Last().dev_mem > cl_mem &&
+                            cl_txt.Y < queue.Last().ids.Count() && cl_txt.X < picSize.Width * picSize.Height
+                            ) { allow_cuda = false; }
+                    }
+                }
+                if (allow_cuda)
+                {
+                    try
+                    {
+                        cutext += '\n' + "Расчет ошибки:" + '\n';
+                        foreach (Pack2 pack in queue)
+                        {
+                            // MessageBox.Show(pack.ids.Count().ToString());
+
+                            //MessageBox.Show(Convert.ToString(*(*(pack.weights + pack.ids.Count()-1) + 4095))); //0 is neuron index as in ids
+                            // MessageBox.Show(Convert.ToString(*(*(pack.weights + 4095) + pack.ids.Count() - 1)));
+
+                            int neurons = pack.w.Count;
+                            float*[] X = new float*[neurons];
+                            for (int i = 0; i < neurons; i++)
+                            {
+                                fixed (float* p = pack.w[i])
+                                {
+                                    X[i] = p;
+                                }
+                            }
+
+                            fixed (float** weights = X)
+                            {
+                                // MessageBox.Show(Convert.ToString(*(*(weights + pack.ids.Count() - 1) + 4095)));
+                                calculate_hidden_layers_errors(dev_index, picSize.Width, picSize.Height, pack.ids.Count(), pack.links_in.Count(), pack.current, pack.p_ids, pack.p_links_in, pack.p_links_out, pack.p_layers, pack.p_a, pack.p_e, weights);
+                                s_transactions += 1;
+                                cutext += " обработано нейронов: " + pack.ids.Count() + ", памяти выделено: " + pack.dev_mem + '\n';
+
+                                //List<float> test = new List<float>();
+                                //for (int j = 0; j < pack.ids.Count(); j++)
+                                //{
+                                //    test.Add(pack.p_e[j]);
+                                //}
+
+
+                                for (int j = 0; j < pack.ids.Count(); j++)
+                                {
+                                    network.Layers[pack.layers[j]].Neurons.Where(n => n.id == pack.ids[j]).First().error = pack.p_e[j];
+                                }
+
+                                //int k = 0;
+
+
+                                //for (int j = 0; j < pack.ids.Count()-1; j++)
+                                //{
+                                //    if(network.Layers[pack.current].Neurons.Where(n => n.id == pack.ids[j]).Count()!=0)
+                                //        network.Layers[pack.current].Neurons.Where(n => n.id == pack.ids[j]).First().error = pack.p_e[j];
+
+                                //}
+                                //for(int j = 0; j<network.Layers[pack.current].Neurons.Count; j++)
+                                //{
+
+                                //}
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
+                }
+            }
+
+
+            if (!allow_cuda)
             {
                 foreach (var layer in network.Layers.Where(l => l.Name != "Output"))
                 {
@@ -676,11 +751,6 @@ namespace Arkenstone
                         neuron.error = (float)(neuron.a * (1 - neuron.a) * sum);
                     }
                 }
-            }
-            else
-            {
-                Pack2 p2 = new Pack2(ref network, ref links, ref picSize, 1);
-                //
             }
         }
 
@@ -1174,8 +1244,9 @@ namespace Arkenstone
             MessageBox.Show(iteration_count.ToString() + " итераций");
             if (enable_CUDA)
             {
+                cu.richTextBox2.Text += cutext;
                 MessageBox.Show(s_transactions + " cuda-транзакций");
-                mem_clear(dev_index);
+                //mem_clear(dev_index);
             }
         }
 
