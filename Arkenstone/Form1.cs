@@ -37,6 +37,9 @@ namespace Arkenstone
         [DllImport("cudArk.dll", CallingConvention = CallingConvention.Cdecl)] //cuda
         public static extern void mem_clear(int dev);//cuda
 
+        [DllImport("cudArk.dll", CallingConvention = CallingConvention.Cdecl)] //cuda
+        public static extern void prof_stop();//cuda
+
         public int s_transactions = 0;
         string cutext = "";
 
@@ -457,6 +460,8 @@ namespace Arkenstone
 
         public unsafe void run_network_new()
         {
+            
+            
             bool allow_cuda = true;
             if (!enable_CUDA)
                 allow_cuda = false;
@@ -503,10 +508,17 @@ namespace Arkenstone
                                 cutext += " обработано нейронов: " + pack.ids.Count() + ", памяти выделено: " + pack.dev_mem + '\n';
 
 
+                                
                                 for (int j = 0; j < pack.ids.Count(); j++)
                                 {
+                                   // MessageBox.Show(network.Layers[pack.layers[j]].Neurons.Where(n => n.id == pack.ids[j]).First().id.ToString());
+                                   // MessageBox.Show("Итерация \n"+iteration_count.ToString());
+                                   // MessageBox.Show(network.Layers[pack.layers[j]].Neurons.Where(n => n.id == pack.ids[j]).First().a.ToString());
                                     network.Layers[pack.layers[j]].Neurons.Where(n => n.id == pack.ids[j]).First().a = pack.p_a[j];
+                                 //   MessageBox.Show(pack.ids[j].ToString());
+                                  //  MessageBox.Show(pack.p_a[j].ToString());
                                 }
+                                
                             }
                         }
                     }
@@ -1247,6 +1259,7 @@ namespace Arkenstone
                 cu.richTextBox2.Text += cutext;
                 MessageBox.Show(s_transactions + " cuda-транзакций");
                 //mem_clear(dev_index);
+                prof_stop(); Application.Exit();
             }
         }
 
