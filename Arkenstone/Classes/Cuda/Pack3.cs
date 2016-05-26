@@ -43,7 +43,7 @@ namespace Arkenstone.Classes.Cuda
             {
                     foreach (var leftneuron in N.Layers[n + 1].Neurons)
                     {
-                        if (IsLinkedLocal(leftneuron.id, neuron.id, ref L))
+                        if (IsLinkedLocal(leftneuron.id, neuron.id, ref L) && 1 - neuron.a > 0.01)
                         {
                             if (!list.Contains(neuron.id))
                             {

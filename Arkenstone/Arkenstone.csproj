@@ -67,6 +67,7 @@
     <Compile Include="Classes\Network.cs" />
     <Compile Include="Classes\Neuron.cs" />
     <Compile Include="Classes\Operations.cs" />
+    <Compile Include="Classes\Cuda\Pack31.cs" />
     <Compile Include="Cuda\Cuda.cs">
       <SubType>Form</SubType>
     </Compile>

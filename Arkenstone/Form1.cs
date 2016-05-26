@@ -31,8 +31,12 @@ namespace Arkenstone
 
         [DllImport("cudArk.dll", CallingConvention = CallingConvention.Cdecl)] //cuda
         public static extern void calculate_hidden_layers_errors(int dev, int width, int height, int neurons, int links, int current, int* p_ids, int* p_links_in, int* p_links_out, int* p_layers, float* p_a, float* p_e, float** weights);//cuda
+        //void update_weights(int dev, int width, int height, int neurons, int links, int speed, int* p_ids, int* p_links_in, int* p_links_out, int* p_layers, float* p_a, float* p_e, float* p_t, float **weights); }
 
-        
+
+        [DllImport("cudArk.dll", CallingConvention = CallingConvention.Cdecl)] //cuda
+        public static extern void update_weights(int dev, int width, int height, int neurons, int links, float speed, int* p_ids, int* p_links_in, int* p_links_out, int* p_layers, float* p_a, float* p_e, float* p_t, float **weights);//cuda
+
         
         [DllImport("cudArk.dll", CallingConvention = CallingConvention.Cdecl)] //cuda
         public static extern void mem_clear(int dev);//cuda
@@ -462,76 +466,76 @@ namespace Arkenstone
         {
             
             
-            bool allow_cuda = true;
-            if (!enable_CUDA)
-                allow_cuda = false;
-            else
-            {
-                List<Pack1> queue = new List<Pack1>();
-                for (int i = 0; i < network.Layers[0].Neurons.Count; i++)
-                {
-                    if (limit_out - network.Layers[0].Neurons[i].a > 0.01)
-                    {
-                        queue.Add(new Pack1(ref network, ref links, ref picSize, i));
-                        if (queue.Last().dev_mem > cl_mem &&
-                            cl_txt.Y < queue.Last().ids.Count() && cl_txt.X < picSize.Width * picSize.Height
-                            ) { allow_cuda = false; }
-                    }
-                }
-                if (allow_cuda)
-                {
-                    try
-                    {
-                        cutext += '\n' +"Прогон сети:"+'\n';
-                        foreach (Pack1 pack in queue)
-                        {
-                            // MessageBox.Show(pack.ids.Count().ToString());
+            //bool allow_cuda = true;
+            //if (!enable_CUDA)
+            //    allow_cuda = false;
+            //else
+            //{
+            //    List<Pack1> queue = new List<Pack1>();
+            //    for (int i = 0; i < network.Layers[0].Neurons.Count; i++)
+            //    {
+            //        if (limit_out - network.Layers[0].Neurons[i].a > 0.01)
+            //        {
+            //            queue.Add(new Pack1(ref network, ref links, ref picSize, i));
+            //            if (queue.Last().dev_mem > cl_mem &&
+            //                cl_txt.Y < queue.Last().ids.Count() && cl_txt.X < picSize.Width * picSize.Height
+            //                ) { allow_cuda = false; }
+            //        }
+            //    }
+            //    if (allow_cuda)
+            //    {
+            //        try
+            //        {
+            //            cutext += '\n' +"Прогон сети:"+'\n';
+            //            foreach (Pack1 pack in queue)
+            //            {
+            //                // MessageBox.Show(pack.ids.Count().ToString());
 
-                            //MessageBox.Show(Convert.ToString(*(*(pack.weights + pack.ids.Count()-1) + 4095))); //0 is neuron index as in ids
-                            // MessageBox.Show(Convert.ToString(*(*(pack.weights + 4095) + pack.ids.Count() - 1)));
+            //                //MessageBox.Show(Convert.ToString(*(*(pack.weights + pack.ids.Count()-1) + 4095))); //0 is neuron index as in ids
+            //                // MessageBox.Show(Convert.ToString(*(*(pack.weights + 4095) + pack.ids.Count() - 1)));
 
-                            int neurons = pack.w.Count;
-                            float*[] X = new float*[neurons];
-                            for (int i = 0; i < neurons; i++)
-                            {
-                                fixed (float* p = pack.w[i])
-                                {
-                                    X[i] = p;
-                                }
-                            }
+            //                int neurons = pack.w.Count;
+            //                float*[] X = new float*[neurons];
+            //                for (int i = 0; i < neurons; i++)
+            //                {
+            //                    fixed (float* p = pack.w[i])
+            //                    {
+            //                        X[i] = p;
+            //                    }
+            //                }
 
-                            fixed (float** weights = X)
-                            {
-                                // MessageBox.Show(Convert.ToString(*(*(weights + pack.ids.Count() - 1) + 4095)));
-                                run_network_new(dev_index, picSize.Width, picSize.Height, pack.ids.Count(), pack.p_ids, pack.p_links_in, pack.p_links_out, pack.p_layers, pack.p_facts, pack.p_a, pack.p_t, weights);
-                                s_transactions += 1;
-                                cutext += " обработано нейронов: " + pack.ids.Count() + ", памяти выделено: " + pack.dev_mem + '\n';
+            //                fixed (float** weights = X)
+            //                {
+            //                    // MessageBox.Show(Convert.ToString(*(*(weights + pack.ids.Count() - 1) + 4095)));
+            //                    run_network_new(dev_index, picSize.Width, picSize.Height, pack.ids.Count(), pack.p_ids, pack.p_links_in, pack.p_links_out, pack.p_layers, pack.p_facts, pack.p_a, pack.p_t, weights);
+            //                    s_transactions += 1;
+            //                    cutext += " обработано нейронов: " + pack.ids.Count() + ", памяти выделено: " + pack.dev_mem + '\n';
 
 
                                 
-                                for (int j = 0; j < pack.ids.Count(); j++)
-                                {
-                                   // MessageBox.Show(network.Layers[pack.layers[j]].Neurons.Where(n => n.id == pack.ids[j]).First().id.ToString());
-                                   // MessageBox.Show("Итерация \n"+iteration_count.ToString());
-                                   // MessageBox.Show(network.Layers[pack.layers[j]].Neurons.Where(n => n.id == pack.ids[j]).First().a.ToString());
-                                    network.Layers[pack.layers[j]].Neurons.Where(n => n.id == pack.ids[j]).First().a = pack.p_a[j];
-                                 //   MessageBox.Show(pack.ids[j].ToString());
-                                  //  MessageBox.Show(pack.p_a[j].ToString());
-                                }
+            //                    for (int j = 0; j < pack.ids.Count(); j++)
+            //                    {
+            //                       // MessageBox.Show(network.Layers[pack.layers[j]].Neurons.Where(n => n.id == pack.ids[j]).First().id.ToString());
+            //                       // MessageBox.Show("Итерация \n"+iteration_count.ToString());
+            //                       // MessageBox.Show(network.Layers[pack.layers[j]].Neurons.Where(n => n.id == pack.ids[j]).First().a.ToString());
+            //                        network.Layers[pack.layers[j]].Neurons.Where(n => n.id == pack.ids[j]).First().a = pack.p_a[j];
+            //                     //   MessageBox.Show(pack.ids[j].ToString());
+            //                      //  MessageBox.Show(pack.p_a[j].ToString());
+            //                    }
                                 
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.Message);
-                    }
-                }
-            }
+            //                }
+            //            }
+            //        }
+            //        catch (Exception ex)
+            //        {
+            //            MessageBox.Show(ex.Message);
+            //        }
+            //    }
+            //}
 
 
-            if (!allow_cuda)
-            {
+            //if (!allow_cuda)
+            //{
                 //первый скрытый слой
                 foreach (var outNeuron in network.Layers[0].Neurons)
                 {
@@ -650,7 +654,7 @@ namespace Arkenstone
                         outNeuron.a = (float)(Neuron.ActivationFunction(outNeuron.func_name, sum - outNeuron.threshold, outNeuron.threshold));
                     }
                 }
-            }
+            //}
         }
 
         public void calculate_output_layer_errors_new()
@@ -769,22 +773,78 @@ namespace Arkenstone
 
         public void update_output_weights()
         {
-            Pack3 p3 = new Pack3(ref network, ref links, ref picSize, 0,2);//не подавать последний
+           // Pack31 p3 = new Pack31(ref network, ref links, ref picSize);//для нулевого
 
-            foreach (var outNeuron in network.Layers[0].Neurons.Where(outNeuron => limit_out - outNeuron.a > 0.01))
+
+
+             bool allow_cuda = true;
+            if (!enable_CUDA)
+                allow_cuda = false;
+            else
             {
-                foreach (var hidNeuron in network.Layers[1].Neurons.Where(hidNeuron => IsLinkedLocal(hidNeuron.id, outNeuron.id)))
+                Pack31 p3 = new Pack31(ref network, ref links, ref picSize);//для нулевого
+                        if (p3.dev_mem > cl_mem &&
+                            cl_txt.Y < p3.ids.Count() && cl_txt.X < picSize.Width * picSize.Height
+                            ) { allow_cuda = false; }
+                if (allow_cuda)
                 {
-                    for (int x = 0; x < 64; x++)
+                    try
                     {
-                        for (int y = 0; y < 64; y++)
-                        {
-                            if (outNeuron.weight[x, y] > 0)
-                                outNeuron.weight[x, y] += (float)(hidNeuron.weight[x, y] + speed * outNeuron.error * hidNeuron.a);
-                        }
+                        cutext += '\n' + "Обновление весов:" + '\n';
+                       
+                            
+
+                            int neurons = p3.w.Count;
+                            float*[] X = new float*[neurons];
+                            for (int i = 0; i < neurons; i++)
+                            {
+                                fixed (float* p = p3.w[i])
+                                {
+                                    X[i] = p;
+                                }
+                            }
+
+                            fixed (float** weights = X)
+                            {
+                                update_weights(dev_index, picSize.Width, picSize.Height, p3.ids.Count(), p3.links_in.Count(), (float)speed, p3.p_ids, p3.p_links_in, p3.p_links_out, p3.p_layers, p3.p_a, p3.p_e, p3.p_t, weights);
+                                s_transactions += 1;
+                                cutext += " обработано нейронов: " + p3.ids.Count() + ", памяти выделено: " + p3.dev_mem + '\n';
+
+
+
+                                for (int j = 0; j < p3.ids.Count(); j++)
+                                {
+                                    network.Layers[p3.layers[j]].Neurons.Where(n => n.id == p3.ids[j]).First().threshold = p3.p_t[j];
+                                }
+                            }
+                        
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
                     }
                 }
-                outNeuron.threshold = (float)(outNeuron.threshold - speed * outNeuron.error);
+            }
+
+
+            if (!allow_cuda)
+            {
+                foreach (var outNeuron in network.Layers[0].Neurons.Where(outNeuron => limit_out - outNeuron.a > 0.01))
+                {
+                    foreach (var hidNeuron in network.Layers[1].Neurons.Where(hidNeuron => IsLinkedLocal(hidNeuron.id, outNeuron.id)))
+                    {
+                        for (int x = 0; x < 64; x++)
+                        {
+                            for (int y = 0; y < 64; y++)
+                            {
+                                if (outNeuron.weight[x, y] > 0)
+                                    outNeuron.weight[x, y] += (float)(hidNeuron.weight[x, y] + speed * outNeuron.error * hidNeuron.a);
+                            }
+                        }
+                    }
+                    outNeuron.threshold = (float)(outNeuron.threshold - speed * outNeuron.error);
+                }
+
             }
         }
 
