@@ -121,6 +121,8 @@ namespace Arkenstone.Classes.Cuda
                         if (IsLinkedLocal(neuron.id, list[i], ref L))
                         {
                             list.Add(neuron.id);
+                         
+                            
                             l_out.Add(neuron.id);
                             l_in.Add(list[i]);
 
