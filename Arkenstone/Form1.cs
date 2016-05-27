@@ -46,8 +46,8 @@ namespace Arkenstone
 
         public int s_transactions = 0;
         string cutext = "";
-
-
+        
+        
         public bool enable_CUDA;
 
         public int dev_index = -1; // card index for Cuda
@@ -464,7 +464,7 @@ namespace Arkenstone
 
         public unsafe void run_network_new()
         {
-            
+
             
             bool allow_cuda = true;
             if (!enable_CUDA)
@@ -1050,7 +1050,6 @@ namespace Arkenstone
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
             comboBox1.SelectedIndex = 0;
             char[] Arr = Enumerable.Range(0, 32).Select((int x, int i) => (char) (1040 + i)).ToArray<char>();
             char[] arr = Enumerable.Range(0, 32).Select((int x, int i) => (char) (1072 + i)).ToArray<char>();
