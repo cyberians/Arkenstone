@@ -62,6 +62,7 @@
     <Compile Include="Classes\Cuda\Pack1.cs" />
     <Compile Include="Classes\Cuda\Pack2.cs" />
     <Compile Include="Classes\Cuda\Pack3.cs" />
+    <Compile Include="Classes\Cuda\Pack32.cs" />
     <Compile Include="Classes\NetLayer.cs" />
     <Compile Include="Classes\Link.cs" />
     <Compile Include="Classes\Network.cs" />

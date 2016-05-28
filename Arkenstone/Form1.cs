@@ -37,6 +37,9 @@ namespace Arkenstone
         [DllImport("cudArk.dll", CallingConvention = CallingConvention.Cdecl)] //cuda
         public static extern void update_weights(int dev, int width, int height, int neurons, int links, float speed, int* p_ids, int* p_links_in, int* p_links_out, int* p_layers, float* p_a, float* p_e, float* p_t, float **weights);//cuda
 
+        [DllImport("cudArk.dll", CallingConvention = CallingConvention.Cdecl)] //cuda
+        public static extern void update_weightss(int dev, int width, int height, int neurons, int links, float speed, int last, int* p_ids, int* p_links_in, int* p_links_out, int* p_layers, float* p_a, float* p_e, float* p_t, float** weights);//cuda
+
         
         [DllImport("cudArk.dll", CallingConvention = CallingConvention.Cdecl)] //cuda
         public static extern void mem_clear(int dev);//cuda
@@ -49,6 +52,7 @@ namespace Arkenstone
         
         
         public bool enable_CUDA;
+        bool ready = false;
 
         public int dev_index = -1; // card index for Cuda
         public float cl_mem; //memory Cuda limit
@@ -674,13 +678,13 @@ namespace Arkenstone
                 List<Pack2> queue = new List<Pack2>();
                 for (int i = 1; i < network.Layers.Count - 1; i++)
                 {
-                    if (limit_out - network.Layers[0].Neurons[i].a > 0.01)
-                    {
+                 //   if (limit_out - network.Layers[0].Neurons[i].a > 0.01)
+                   // {
                         queue.Add(new Pack2(ref network, ref links, ref picSize, i));
                         if (queue.Last().dev_mem > cl_mem &&
                             cl_txt.Y < queue.Last().ids.Count() && cl_txt.X < picSize.Width * picSize.Height
                             ) { allow_cuda = false; }
-                    }
+                 //   }
                 }
                 if (allow_cuda)
                 {
@@ -850,9 +854,36 @@ namespace Arkenstone
             }
         }
 
+
+        public void update_weights_1()
+        {
+            Pack32 p = new Pack32(ref network, ref links, ref picSize, 1);
+            int neurons = p.w.Count;
+            float*[] X = new float*[neurons];
+            for (int i = 0; i < neurons; i++)
+            {
+                fixed (float* pp = p.w[i])
+                {
+                    X[i] = pp;
+                }
+            }
+
+            fixed (float** weights = X)
+            {
+                update_weightss(dev_index, picSize.Width, picSize.Height, p.ids.Count(), p.links_in.Count(), (float)speed, 2, p.p_ids, p.p_links_in, p.p_links_out, p.p_layers, p.p_a, p.p_e, p.p_t, weights);
+                s_transactions += 1;
+                cutext += " обработано нейронов: " + p.ids.Count() + ", памяти выделено: " + p.dev_mem + '\n';
+
+                for (int j = 0; j < p.ids.Count(); j++)
+                {
+                    network.Layers[p.layers[j]].Neurons.Where(n => n.id == p.ids[j]).First().threshold = p.p_t[j];
+                }
+
+            }
+        }
+
         public void update_hidden_weights()
         {
-            
             foreach (var outNeuron in network.Layers[0].Neurons)
             {
                 if (limit_out - outNeuron.a > 0.01)
@@ -876,7 +907,6 @@ namespace Arkenstone
                         }
                     }
                 }
-
             }
            
         }
@@ -1237,7 +1267,6 @@ namespace Arkenstone
 
         private void button2_Click(object sender, EventArgs e)
         {
-
             backgroundWorker1.RunWorkerAsync();
 
             
@@ -1252,7 +1281,7 @@ namespace Arkenstone
             
             myStopwatch.Start();
 
-            bool ready = false;
+            ready = false;
             
 
             int good_count = 0;
@@ -1276,9 +1305,21 @@ namespace Arkenstone
                     calculate_hidden_layers_errors();
 
                     update_output_weights();
-                    update_hidden_weights();
+
+                    if (!enable_CUDA)
+                    {
+                        update_hidden_weights();
+                        
+                        // }
+                    }
+                    else
+                    {
+                        update_weights_1();
+                    }
+
                     update_FIRST_hidden_layer_weights();
                     //
+
                     iteration_count++;
                     
                     backgroundWorker1.ReportProgress(iteration_count/2);
@@ -1798,6 +1839,11 @@ namespace Arkenstone
         private void button11_Click(object sender, EventArgs e)
         {
             cu.Show();
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            ready = true;
         }
     }
 }

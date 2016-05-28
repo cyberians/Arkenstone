@@ -86,6 +86,7 @@ namespace Arkenstone.Cuda
         }
         public unsafe void check()
         {
+            richTextBox1.Clear();
             try
             {
                 parentForm.cl_mem = mem_total(comboBox1.SelectedIndex) * 1048576.0f;

@@ -52,7 +52,7 @@
             this.checkedListBox1.Enabled = false;
             this.checkedListBox1.FormattingEnabled = true;
             this.checkedListBox1.Items.AddRange(new object[] {
-            "Работоспособность cuda.dll",
+            "Работоспособность cudArk.dll",
             "Совместимость драйвера",
             "Совместимость вычислительной способности"});
             this.checkedListBox1.Location = new System.Drawing.Point(7, 132);
