@@ -10,6 +10,10 @@ namespace Arkenstone.Classes
     {
         public List<NetLayer> Layers = new List<NetLayer>();
 
-
+        public enum NetworkType
+        {
+            Images,
+            Numbers
+        }
     }
 }

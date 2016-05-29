@@ -278,5 +278,21 @@ namespace Arkenstone.Classes
         }
 
 
+        public static bool IsLinkedGlobal(int firstNeuron, int lastNeuron, ref List<Link> links )
+        {
+            return false;
+        }
+
+        public static bool IsLinkedLocal(int firstNeuron, int lastNeuron, ref List<Link> links)
+        {
+            return false;
+        }
+
+        public static void RecognizeLetter(object input, Network network)
+        {
+            
+        }
+
+
     }
 }

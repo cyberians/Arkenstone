@@ -1556,29 +1556,7 @@ namespace Arkenstone
             
         }
 
-        private void InsertNeuron()
-        {
-            
-        }
 
-        private Point HiddenPoint(Shape boxShape)
-        {
-            var point = new Point();
-
-            if (diagram.Shapes.Count == 0)
-            {
-                point.X = 250;
-                point.Y = 250;
-            }
-            else
-            {
-                point.X = diagram.Shapes.First().X;
-                point.Y = diagram.Shapes.First().Y + 60;
-            }
-
-
-            return point;
-        }
 
         private void CreateLinksBeetwenNeurons(List<Shape> shapes, List<Shape> hidden_shapes)
         {
@@ -1712,25 +1690,6 @@ namespace Arkenstone
 
         }
 
-        private void CreateSecondHiddenLayer(List<Shape> shapes)
-        {
-            for (int i = 0; i < shapes.Count; i++)
-            {
-                for (int j = 0; j < connect.Count; j++)
-                {
-                    if (connect[j].Contains(Convert.ToInt32(shapes[i].Data)))
-                    {
-                        
-                    }
-                }
-                
-            }
-            
-            //foreach (var shape in shapes.Where(s => s.Type.Name == "Box"))
-            //{
-
-            //}
-        }
         private void CreateFirstHiddenLayer(List<Image> images)
         {
             
@@ -1788,11 +1747,6 @@ namespace Arkenstone
             }
         }
 
-        private void button9_Click(object sender, EventArgs e)
-        {
-            Application.Restart();
-        }
-
         private void button10_Click(object sender, EventArgs e)
         {
             listBox1.Items.Clear();
@@ -1844,6 +1798,12 @@ namespace Arkenstone
         private void button6_Click(object sender, EventArgs e)
         {
             ready = true;
+        }
+
+        private void настройкиСетиToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            settings set= new settings();
+            set.ShowDialog();
         }
     }
 }
