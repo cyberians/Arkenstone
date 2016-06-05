@@ -63,6 +63,16 @@ namespace Arkenstone.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap ark_fon {
+            get {
+                object obj = ResourceManager.GetObject("ark fon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap arkfon {
             get {
                 object obj = ResourceManager.GetObject("arkfon", resourceCulture);
