@@ -165,22 +165,4 @@
   <metadata name="backgroundWorker1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>638, 56</value>
   </metadata>
-  <data name="richTextBox1.Text" xml:space="preserve">
-    <value>Learning log-----
-
-Neuron 0 - 0.579098347528345
-Neuron 1 - 0.825376342345234
-Neuron 2 - 0.586734956345656
-Neuron 3 - 0.454935647569384
-Neuron 4 - 0.854356348563456
-Neuron 5 - 0.912423423843422
-Neuron 6 - 0.234534593453453
-Neuron 7 - 0.579098347528345
-Neuron 8 - 0.825376342345234
-Neuron 9 - 0.586734956345656
-Neuron 10 - 0.454935647569384
-Neuron 11 - 0.854356348563456
-Neuron 12 - 0.912423423843422
-Neuron 13 - 0.234534593453453</value>
-  </data>
 </root>

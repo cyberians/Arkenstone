@@ -30,7 +30,7 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            Dataweb.NShape.RoleBasedSecurityManager roleBasedSecurityManager4 = new Dataweb.NShape.RoleBasedSecurityManager();
+            Dataweb.NShape.RoleBasedSecurityManager roleBasedSecurityManager1 = new Dataweb.NShape.RoleBasedSecurityManager();
             this.listView1 = new System.Windows.Forms.ListView();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.файлToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -71,7 +71,6 @@
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.button6 = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.button8 = new System.Windows.Forms.Button();
             this.panel3 = new System.Windows.Forms.Panel();
@@ -107,7 +106,7 @@
             this.параметрыToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1176, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1177, 24);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -178,9 +177,9 @@
             // 
             this.propertyGrid1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.propertyGrid1.CategoryForeColor = System.Drawing.SystemColors.InactiveCaptionText;
-            this.propertyGrid1.Location = new System.Drawing.Point(921, 283);
+            this.propertyGrid1.Location = new System.Drawing.Point(922, 307);
             this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(243, 318);
+            this.propertyGrid1.Size = new System.Drawing.Size(243, 294);
             this.propertyGrid1.TabIndex = 2;
             // 
             // cachedRepository1
@@ -210,9 +209,9 @@
             this.project1.LibrarySearchPaths = ((System.Collections.Generic.IList<string>)(resources.GetObject("project1.LibrarySearchPaths")));
             this.project1.Name = null;
             this.project1.Repository = this.cachedRepository1;
-            roleBasedSecurityManager4.CurrentRole = Dataweb.NShape.StandardRole.Administrator;
-            roleBasedSecurityManager4.CurrentRoleName = "Administrator";
-            this.project1.SecurityManager = roleBasedSecurityManager4;
+            roleBasedSecurityManager1.CurrentRole = Dataweb.NShape.StandardRole.Administrator;
+            roleBasedSecurityManager1.CurrentRoleName = "Administrator";
+            this.project1.SecurityManager = roleBasedSecurityManager1;
             // 
             // display1
             // 
@@ -232,7 +231,7 @@
             this.display1.SelectionInactiveColor = System.Drawing.Color.Gray;
             this.display1.SelectionInteriorColor = System.Drawing.Color.WhiteSmoke;
             this.display1.SelectionNormalColor = System.Drawing.Color.DarkGreen;
-            this.display1.Size = new System.Drawing.Size(708, 482);
+            this.display1.Size = new System.Drawing.Size(709, 482);
             this.display1.TabIndex = 3;
             this.display1.ToolPreviewBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(119)))), ((int)(((byte)(136)))), ((int)(((byte)(153)))));
             this.display1.ToolPreviewColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(70)))), ((int)(((byte)(130)))), ((int)(((byte)(180)))));
@@ -428,18 +427,10 @@
             this.panel1.Controls.Add(this.listBox1);
             this.panel1.Controls.Add(this.button6);
             this.panel1.Controls.Add(this.button10);
-            this.panel1.Location = new System.Drawing.Point(1169, 90);
+            this.panel1.Location = new System.Drawing.Point(922, 90);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(259, 211);
             this.panel1.TabIndex = 22;
-            // 
-            // richTextBox1
-            // 
-            this.richTextBox1.Location = new System.Drawing.Point(921, 90);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(243, 187);
-            this.richTextBox1.TabIndex = 23;
-            this.richTextBox1.Text = resources.GetString("richTextBox1.Text");
             // 
             // panel2
             // 
@@ -511,11 +502,10 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = global::Arkenstone.Properties.Resources.arkfon;
-            this.ClientSize = new System.Drawing.Size(1176, 613);
+            this.ClientSize = new System.Drawing.Size(1177, 613);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
-            this.Controls.Add(this.richTextBox1);
             this.Controls.Add(this.button11);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.display1);
@@ -527,6 +517,7 @@
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Arkenstone";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
@@ -584,7 +575,6 @@
         private System.Windows.Forms.ToolStripMenuItem настройкиСетиToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem пакетнаяЗагрузкаToolStripMenuItem;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.RichTextBox richTextBox1;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Button button8;
         private System.Windows.Forms.Panel panel3;
